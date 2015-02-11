@@ -113,7 +113,7 @@ var Frozen = {
 				val = me.freeze( val, notify );
 
 			if( val && val.__ )
-				val.__.parents.push( node );
+				me.addParent( val, frozen );
 
 			frozen[ key ] = val;
 		}

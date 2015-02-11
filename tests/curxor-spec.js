@@ -36,11 +36,12 @@ describe("Freezer test", function(){
 	});
 
 	it( "Update a value", function(){
-		data.set({a: 2});
+		data.set({a: {b:1} });
 
 		var updated = freezer.getData();
 
-		assert.equal( updated.a, 2 );
+		assert.equal( updated, updated.a.__.parents[0]);
+		assert.deepEqual( updated.a, {b:1} );
 		assert.notEqual( updated, data );
 	});
 
