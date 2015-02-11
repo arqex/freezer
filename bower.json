@@ -1,0 +1,28 @@
+{
+  "name": "curxor",
+  "version": "0.3.0",
+  "homepage": "https://github.com/arqex/curxor",
+  "authors": [
+    "arqex"
+  ],
+  "description": "A tree data structure that is always updated from the root, making easier to think in a reactive way.",
+  "main": "curxor.js",
+  "keywords": [
+    "react",
+    "store",
+    "flux",
+    "reactive",
+    "state"
+  ],
+  "license": "BSD2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "system.js": "~0.11.3"
+  }
+}
