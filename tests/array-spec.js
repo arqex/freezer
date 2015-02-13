@@ -114,4 +114,10 @@ describe("Freezer array test", function(){
 		assert.equal( updated.c[3], data.c[2] );
 	});
 
+	it( "Concat", function(){
+		var concat = data.b.x.concat( ['C','D'] );
+
+		assert.deepEqual( concat, ['A','B','C','D'] );
+	});
+
 });

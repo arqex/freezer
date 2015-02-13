@@ -18,7 +18,6 @@ describe("Freezer test", function(){
 	});
 
 	it( "Create a freezer object", function(){
-		console.log( freezer );
 		assert.equal( data.a, example.a );
 		assert.deepEqual( data.b, example.b );
 		assert.equal( data.b.z, example.b.z );
@@ -72,8 +71,6 @@ describe("Freezer test", function(){
 
 		assert.equal( updated.a, data.a );
 		assert.equal( updated.b, data.b );
-		console.log( 'Updated');
-		console.log( updated.c );
 		assert.equal( updated.c[0], data.c[0] );
 		assert.equal( updated.c[2], data.c[2] );
 	});
@@ -94,6 +91,29 @@ describe("Freezer test", function(){
 
 		assert.equal( updated.b, updated.d );
 		assert.equal( updated.d.z, 2 );
+	});
+
+	it( "All duplicated node parents should be updated at the same time", function(){
+		data.c[2].set( {y: data.b.x } );
+
+		var updated = freezer.get();
+
+
+		assert.equal( updated.b.x.__.parents.length, 2 );
+		assert.equal( updated.b.x.__.parents[1], updated.c[2] );
+		assert.equal( updated.b.x.__.parents[0], updated.b );
+
+		updated.b.x.push( 'C' );
+
+		var second = freezer.get();
+
+		assert.notEqual( updated, second );
+		assert.notEqual( updated.c, second.c );
+		assert.notEqual( updated.c[2], second.c[2] );
+		assert.notEqual( updated.b, second.b );
+		assert.equal( second.b.x.__.parents.length, 2 );
+		assert.equal( second.b.x.__.parents[1], second.c[2] );
+		assert.equal( second.b.x.__.parents[0], second.b );
 	});
 
 	it( "Restore a previous state", function(){

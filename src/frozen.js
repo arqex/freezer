@@ -26,7 +26,8 @@ var Frozen = {
 		Utils.addNE( frozen, { __: {
 			listener: false,
 			parents: [],
-			notify: notify
+			notify: notify,
+			dirty: false
 		}});
 
 		// Freeze children
@@ -202,16 +203,22 @@ var Frozen = {
 		return frozen;
 	},
 
-	refresh: function( node, oldChild, newChild ){
+	refresh: function( node, oldChild, newChild, returnUpdated ){
 		var me = this,
-			frozen = this.copyMeta( node )
+			frozen = this.copyMeta( node ),
+			__
 		;
 
 		Utils.each( node, function( child, key ){
-			if( child == oldChild )
+			if( child == oldChild ){
 				child = newChild;
+			}
 
-			if( child && child.__ ){
+			if( child && (__ = child.__) ){
+				if( __.dirty ){
+					child = me.refresh( child, __.dirty[0], __.dirty[1], true );
+				}
+
 				me.removeParent( child, node );
 				me.addParent( child, frozen );
 			}
@@ -221,7 +228,17 @@ var Frozen = {
 
 		Object.freeze( frozen );
 
+		// If the node was dirty, clean it
+		node.__.dirty = false;
+
+		if( returnUpdated )
+			return frozen;
+
 		this.refreshParents( node, frozen );
+	},
+
+	clean: function( node ){
+		return this.refresh( node, __.dirty[0], __.dirty[1], true );
 	},
 
 	copyMeta: function( node ){
@@ -240,7 +257,8 @@ var Frozen = {
 		Utils.addNE( frozen, {__: {
 			notify: __.notify,
 			listener: __.listener,
-			parents: __.parents.slice( 0 )
+			parents: __.parents.slice( 0 ),
+			dirty: false
 		}});
 
 		return frozen;
@@ -255,13 +273,27 @@ var Frozen = {
 
 		if( !__.parents.length ){
 			if( __.listener ){
-				__.listener.trigger( 'immediate', newChild );
+				__.listener.trigger( 'immediate', oldChild, newChild );
 			}
 		}
 		else {
 			for (i = __.parents.length - 1; i >= 0; i--) {
-				this.refresh( __.parents[i], oldChild, newChild );
+				if( i == 0 )
+					this.refresh( __.parents[i], oldChild, newChild, false );
+				else
+					this.markDirty( __.parents[i], [oldChild, newChild] );
 			}
+		}
+	},
+
+	markDirty: function( node, dirt ){
+		var __ = node.__,
+			i
+		;
+		__.dirty = dirt;
+
+		for ( i = __.parents.length - 1; i >= 0; i-- ) {
+			this.markDirty( __.parents[i], dirt );
 		}
 	},
 
@@ -270,7 +302,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index = -1 ){
+		if( index != -1 ){
 			parents.splice( index, 1 );
 		}
 	},

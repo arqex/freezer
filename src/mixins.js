@@ -74,6 +74,10 @@ var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 
 	splice: function( index, toRemove, toAdd ){
 		return this.__.notify( 'splice', this, arguments );
+	},
+
+	concat: function( ){
+		return Array.prototype.concat.apply( this.slice(), arguments );
 	}
 }, commonMethods)));
 

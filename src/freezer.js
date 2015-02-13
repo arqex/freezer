@@ -38,7 +38,10 @@ var Freezer = function( initialValue ) {
 	// Updating flag to trigger the event on nextTick
 	var updating = false;
 
-	listener.on( 'immediate', function( updated ){
+	listener.on( 'immediate', function( prevNode, updated ){
+		if( prevNode != frozen )
+			return;
+
 		frozen = updated;
 
 		// Trigger on next tick
@@ -56,8 +59,8 @@ var Freezer = function( initialValue ) {
 			return frozen;
 		},
 		set: function( node ){
-			frozen = notify( 'reset', frozen, node );
-			frozen.__.listener.trigger( 'immediate', frozen );
+			var newNode = notify( 'reset', frozen, node );
+			newNode.__.listener.trigger( 'immediate', frozen, newNode );
 		}
 	});
 

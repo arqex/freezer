@@ -47,6 +47,12 @@ describe("Freezer hash test", function(){
 		assert.equal( updated.a, undefined );
 	});
 
+	it( "Parents are deleted from a removed object", function(){
+		var chained = data.remove('b');
+
+		assert.equal( data.b.__.parents.length , 0 );
+	});
+
 	it( "A removed hash element can't update the data", function(){
 		var b = data.b;
 
