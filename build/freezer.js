@@ -1,4 +1,4 @@
-/* freezer v0.3.0 (12-2-2015)
+/* freezer-js v0.3.1 (13-2-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: GNU-v2
@@ -260,6 +260,10 @@ var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 
 	splice: function( index, toRemove, toAdd ){
 		return this.__.notify( 'splice', this, arguments );
+	},
+
+	concat: function( ){
+		return Array.prototype.concat.apply( this.slice(), arguments );
 	}
 }, commonMethods)));
 
@@ -508,13 +512,14 @@ var Frozen = {
 		;
 
 		Utils.each( node, function( child, key ){
-			if( child == oldChild )
+			if( child == oldChild ){
 				child = newChild;
-
+			}
 
 			if( child && (__ = child.__) ){
-				if( __.dirty )
+				if( __.dirty ){
 					child = me.refresh( child, __.dirty[0], __.dirty[1], true );
+				}
 
 				me.removeParent( child, node );
 				me.addParent( child, frozen );
@@ -530,6 +535,7 @@ var Frozen = {
 
 		if( returnUpdated )
 			return frozen;
+
 		this.refreshParents( node, frozen );
 	},
 
@@ -598,7 +604,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index = -1 ){
+		if( index != -1 ){
 			parents.splice( index, 1 );
 		}
 	},
