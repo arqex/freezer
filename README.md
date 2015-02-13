@@ -12,6 +12,19 @@ What makes Freezer special is:
 * Lightweight: ~7KB minified (much less if gzipped).
 * Packaged as UMD module to be loaded everywhere.
 
+## Installation
+Freezer is available as a npm package.
+```
+npm install freezer-js
+```
+
+Also as a bower package
+```
+bower install freezer-js
+```
+
+It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~13KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~6KB).
+
 ## Example of use
 ```js
 // Browserify/Node style of loading
