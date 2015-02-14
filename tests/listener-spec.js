@@ -110,4 +110,47 @@ describe("Freezer events test", function(){
 		freezer.getData().c[2].set({u: 10});
 	});
 
+
+	it( "Array chained calls should trigger update with all changes applied", function( done ){
+		var listener = data.c.getListener();
+
+		listener.on( 'update', function( updated ){
+			assert.deepEqual( updated, [0,1,2,3] );
+			done();
+		});
+
+		data.c
+			.pop()
+			.push( 3 )
+			.unshift( 0 )
+		;
+	});
+
+	it( "Hash chained calls should trigger update with all changes applied", function( done ){
+		var listener = data.b.getListener();
+
+		listener.on( 'update', function( updated ){
+			assert.deepEqual( updated, {z:0, y:3, a:2} );
+			done();
+		});
+
+		data.b
+			.set( { y: 3} )
+			.remove( 'x' )
+			.set( {a: 2} )
+		;
+	});
+
+	it( "Chained calls should trigger update with all changes applied", function( done ){
+		freezer.on( 'update', function( updated ){
+			assert.deepEqual( updated.c, [0,1,2,3] );
+			done();
+		});
+
+		data.c
+			.pop()
+			.push( 3 )
+			.unshift( 0 )
+		;
+	});
 });

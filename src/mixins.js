@@ -105,7 +105,7 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 			k = keys
 		;
 
-		if( !keys.constructor == Array )
+		if( keys.constructor != Array )
 			k = [ keys ];
 
 		for( var i = 0, l = k.length; i<l; i++ ){

@@ -285,3 +285,13 @@ Register a function to be called once when an event occurs. After being called t
 Can unregister all callbacks from a listener if the `eventName` parameter is omitted, or all the callbacks for a `eventName` if the `callback` parameter is omitted.
 #### trigger( eventName [, param, param, ...] )
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
+
+## Changelog
+###v0.3.2
+Fixed: Chained calls should trigger update with the value of all operations. https://github.com/arqex/freezer/issues/2
+###v0.3.1
+Fixed: A cloned node in a frozen should update all the parents at the same time.
+Fixed: Array concat method doesn't work as expected. https://github.com/arqex/freezer/issues/1
+###v0.3.0
+First released version after forking curxor.
+Binding nodes using references to parents.

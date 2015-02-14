@@ -318,13 +318,17 @@ var Frozen = {
 	},
 
 	trigger: function( node, eventName, param ){
-		var listener = node.__.listener;
+		var listener = node.__.listener,
+			ticking = listener && listener.ticking
+		;
 
-		if( listener && !listener.ticking ){
-			listener.ticking = true;
+		listener.ticking = param;
+
+		if( listener && !ticking ){
 			Utils.nextTick( function(){
+				var updated = listener.ticking;
 				listener.ticking = false;
-				listener.trigger( eventName, param );
+				listener.trigger( eventName, updated );
 			});
 		}
 	},

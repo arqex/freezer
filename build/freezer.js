@@ -1,4 +1,4 @@
-/* freezer-js v0.3.1 (13-2-2015)
+/* freezer-js v0.3.2 (14-2-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: GNU-v2
@@ -291,7 +291,7 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 			k = keys
 		;
 
-		if( !keys.constructor == Array )
+		if( keys.constructor != Array )
 			k = [ keys ];
 
 		for( var i = 0, l = k.length; i<l; i++ ){
@@ -620,13 +620,17 @@ var Frozen = {
 	},
 
 	trigger: function( node, eventName, param ){
-		var listener = node.__.listener;
+		var listener = node.__.listener,
+			ticking = listener && listener.ticking
+		;
 
-		if( listener && !listener.ticking ){
-			listener.ticking = true;
+		listener.ticking = param;
+
+		if( listener && !ticking ){
 			Utils.nextTick( function(){
+				var updated = listener.ticking;
 				listener.ticking = false;
-				listener.trigger( eventName, param );
+				listener.trigger( eventName, updated );
 			});
 		}
 	},
