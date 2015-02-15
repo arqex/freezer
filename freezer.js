@@ -1,4 +1,4 @@
-/* freezer-js v0.3.2 (14-2-2015)
+/* freezer-js v0.3.3 (15-2-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: GNU-v2
@@ -189,6 +189,12 @@ var emitterProto = {
 // hashmaps
 var Emitter = Utils.createNonEnumerable( emitterProto );
 
+
+/**
+ * Creates non-enumerable property descriptors, to be used by Object.create.
+ * @param  {Object} attrs Properties to create descriptors
+ * @return {Object}       A hash with the descriptors.
+ */
 var createNE = function( attrs ){
 	var ne = {};
 
@@ -215,13 +221,33 @@ var commonMethods = {
 
 		return this.__.notify( 'replace', this, attrs );
 	},
-	getPaths: function( attrs ){
-		return this.__.notify( 'path', this );
-	},
+
 	getListener: function(){
 		return this.__.notify( 'listener', this );
+	},
+
+	toJS: function(){
+		var js;
+		if( this.constructor == Array ){
+			js = new Array( this.length );
+		}
+		else {
+			js = {};
+		}
+
+		Utils.each( this, function( child, i ){
+			if( child && child.__ )
+				js[ i ] = child.toJS();
+			else
+				js[ i ] = child;
+		});
+
+		return js;
 	}
 };
+
+// Implement toJSON in order to mimic JS objects on `JSON.stringify`
+commonMethods.toJSON = commonMethods.toJS;
 
 var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 	push: function( el ){
@@ -571,7 +597,8 @@ var Frozen = {
 			i
 		;
 
-		this.trigger( newChild, 'update', newChild );
+		if( __.listener )
+			this.trigger( newChild, 'update', newChild );
 
 		if( !__.parents.length ){
 			if( __.listener ){
@@ -621,12 +648,11 @@ var Frozen = {
 
 	trigger: function( node, eventName, param ){
 		var listener = node.__.listener,
-			ticking = listener && listener.ticking
+			ticking = listener.ticking
 		;
 
 		listener.ticking = param;
-
-		if( listener && !ticking ){
+		if( !ticking ){
 			Utils.nextTick( function(){
 				var updated = listener.ticking;
 				listener.ticking = false;
@@ -660,10 +686,6 @@ var Freezer = function( initialValue ) {
 	var frozen;
 
 	var notify = function notify( eventName, node, options ){
-
-		if( eventName == 'path' )
-			return Frozen.getPaths( frozen, node );
-
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
