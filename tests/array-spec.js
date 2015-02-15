@@ -120,4 +120,8 @@ describe("Freezer array test", function(){
 		assert.deepEqual( concat, ['A','B','C','D'] );
 	});
 
+	it( "#toJS", function(){
+		assert.deepEqual( data.c.toJS(), example.c );
+	});
+
 });

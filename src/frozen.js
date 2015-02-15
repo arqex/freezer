@@ -269,7 +269,8 @@ var Frozen = {
 			i
 		;
 
-		this.trigger( newChild, 'update', newChild );
+		if( __.listener )
+			this.trigger( newChild, 'update', newChild );
 
 		if( !__.parents.length ){
 			if( __.listener ){
@@ -319,12 +320,11 @@ var Frozen = {
 
 	trigger: function( node, eventName, param ){
 		var listener = node.__.listener,
-			ticking = listener && listener.ticking
+			ticking = listener.ticking
 		;
 
 		listener.ticking = param;
-
-		if( listener && !ticking ){
+		if( !ticking ){
 			Utils.nextTick( function(){
 				var updated = listener.ticking;
 				listener.ticking = false;

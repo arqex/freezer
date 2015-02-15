@@ -14,10 +14,6 @@ var Freezer = function( initialValue ) {
 	var frozen;
 
 	var notify = function notify( eventName, node, options ){
-
-		if( eventName == 'path' )
-			return Frozen.getPaths( frozen, node );
-
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 

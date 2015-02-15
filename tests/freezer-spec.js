@@ -147,6 +147,8 @@ describe("Freezer test", function(){
 		assert.equal( chained, updated );
 	});
 
-
+	it( "#toJSON", function(){
+		assert.equal( JSON.stringify( data ), JSON.stringify( example ) );
+	});
 
 });

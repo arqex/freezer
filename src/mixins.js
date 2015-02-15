@@ -3,6 +3,12 @@
 var Utils = require( './utils.js' );
 
 //#build
+
+/**
+ * Creates non-enumerable property descriptors, to be used by Object.create.
+ * @param  {Object} attrs Properties to create descriptors
+ * @return {Object}       A hash with the descriptors.
+ */
 var createNE = function( attrs ){
 	var ne = {};
 
@@ -29,13 +35,33 @@ var commonMethods = {
 
 		return this.__.notify( 'replace', this, attrs );
 	},
-	getPaths: function( attrs ){
-		return this.__.notify( 'path', this );
-	},
+
 	getListener: function(){
 		return this.__.notify( 'listener', this );
+	},
+
+	toJS: function(){
+		var js;
+		if( this.constructor == Array ){
+			js = new Array( this.length );
+		}
+		else {
+			js = {};
+		}
+
+		Utils.each( this, function( child, i ){
+			if( child && child.__ )
+				js[ i ] = child.toJS();
+			else
+				js[ i ] = child;
+		});
+
+		return js;
 	}
 };
+
+// Implement toJSON in order to mimic JS objects on `JSON.stringify`
+commonMethods.toJSON = commonMethods.toJS;
 
 var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 	push: function( el ){

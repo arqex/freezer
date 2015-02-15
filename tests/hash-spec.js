@@ -142,4 +142,8 @@ describe("Freezer hash test", function(){
 		assert.equal( third, fourth );
 	});
 
+	it( "#toJS", function(){
+		assert.deepEqual( data.toJS(), example );
+	});
+
 });

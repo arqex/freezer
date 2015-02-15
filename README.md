@@ -141,7 +141,7 @@ shouldComponentUpdate: function( nextProps ){
 
 *Freezer* has less features than *Immutable*, but its API is simpler and it is much more lightweight (Minified, Immutable is ~56KB and Freezer ~7KB).
 
-Instead on learning the set of methods needed to use *Immutable*, *Freezer* uses common JS objects and arrays to store the data, so you can start using it right now.
+Instead on learning the set of methods needed to use *Immutable*, *Freezer* uses common JS objects and array-like objects to store the data, so you can start using it right now.
 
 ## API
 
@@ -181,7 +181,7 @@ console.log( store.get().c ); // false
 
 #### Events
 
-Every time that the data is updated, an `update` event is triggered on the cursor. In order to use those events use `on`, `once` and `off` methods provided by the Listener API that the curxor object implements.
+Every time that the data is updated, an `update` event is triggered on the cursor. In order to use those events use `on`, `once` and `off` methods provided by the [listener API](#listener-api) that the curxor object implements.
 
 ## Update methods
 
@@ -207,13 +207,26 @@ Arrays and hashes can update their children using the `set` method. It accepts a
 var store = new Freezer({obj: {a:'hola', b:'adios'}, arr: [1,2]});
 
 // Updating using a hash
-store.getdata().obj.set( {b:'bye', c:'ciao'} );
+store.get().obj.set( {b:'bye', c:'ciao'} );
 
 // Updating using key and value
 store.get().arr.set( 0, 0 );
 
 // {obj: {a:'hola', b:'bye', c:'ciao'}, arr: [0,2]}
 console.log( store.get() )
+```
+
+#### toJS()
+*Freezer* nodes are immutable, and array ones are not pure JS arrays but objects that inherit from arrays. `toJS` transform *Freezer* nodes to plain mutable JS objects in case you need them.
+```js
+// Require node.js assert
+var assert = require('assert');
+
+var data = {obj: {a:'hola', b:'adios'}, arr: [1,2]},
+    store = new Freezer( data )
+;
+
+assert.deepEqual( data, store.get().toJS ); // Ok
 ```
 
 ## Hash methods
@@ -287,6 +300,10 @@ Can unregister all callbacks from a listener if the `eventName` parameter is omi
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
 
 ## Changelog
+###v0.3.3
+Improved: Performance on refreshing parent nodes on update.
+Added: `toJS` and `toJSON` methods on nodes to get a pure JS object from a node.
+Removed: Path legacy code from curxor.js
 ###v0.3.2
 Fixed: Chained calls should trigger update with the value of all operations. https://github.com/arqex/freezer/issues/2
 ###v0.3.1
