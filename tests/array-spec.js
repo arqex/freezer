@@ -1,6 +1,9 @@
-var assert = require('assert'),
-	Freezer = require( '../freezer.js')
-;
+// Conditional definition to work also in the browser
+// tests where Freezer is global
+if( typeof Freezer == 'undefined' ){
+	var Freezer = require( '../freezer.js' );
+	var assert = require('assert');
+}
 
 var freezer, data;
 

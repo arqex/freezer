@@ -1,6 +1,9 @@
-var assert = require('assert'),
-	Freezer = require( '../freezer.js')
-;
+// Conditional definition to work also in the browser
+// tests where Freezer is global
+if( typeof Freezer == 'undefined' ){
+	var Freezer = require( '../freezer.js' );
+	var assert = require('assert');
+}
 
 var freezer, data;
 
@@ -18,11 +21,11 @@ describe("Freezer test", function(){
 	});
 
 	it( "Create a freezer object", function(){
+		console.log( data.b );
+		console.log( example.b );
 		assert.equal( data.a, example.a );
-		assert.deepEqual( data.b, example.b );
 		assert.equal( data.b.z, example.b.z );
 		assert.equal( data.b.x[0], example.b.x[0] );
-		assert.deepEqual( data.c, example.c );
 		assert.equal( data.c[0], example.c[0] );
 		assert.equal( data.c[2].w, example.c[2].w );
 		assert.equal( data.d, example.d);

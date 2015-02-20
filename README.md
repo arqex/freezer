@@ -28,9 +28,9 @@ It is possible to download the [full version](https://raw.githubusercontent.com/
 ## Example of use
 ```js
 // Browserify/Node style of loading
-var Freezer = require('curxor');
+var Freezer = require('freezer');
 
-// Let's create a curxor store
+// Let's create a freezer store
 var store = new Freezer({
     a: {x: 1, y: 2, z: [0, 1, 2] },
     b: [ 5, 6, 7 , { m: 1, n: 2 } ],
@@ -116,7 +116,7 @@ Imagine that we have the following tree structure as our app store: ![Initial tr
 
 And we have a component responsible of handling the `store.c.f` ( the yellow node ) part of the data. Its scope is just that part of the tree, so the component receives it as a prop:
 ```js
-// The component receives a part of the curxor data
+// The component receives a part of the freezer data
 this.props.branch = { h: 4, i: 5};
 ```
 Eventually the component is used to update `store.c.f.h = 8`. With *Freezer* instead of dispatching an action, as it would be done with *Flux*, those kind of changes can be done using the data itself:
@@ -141,7 +141,7 @@ shouldComponentUpdate: function( nextProps ){
 
 *Freezer* has less features than *Immutable*, but its API is simpler and it is much more lightweight (Minified, Immutable is ~56KB and Freezer ~7KB).
 
-Instead on learning the set of methods needed to use *Immutable*, *Freezer* uses common JS objects and array-like objects to store the data, so you can start using it right now.
+Instead on learning the set of methods needed to use *Immutable*, *Freezer* uses common JS objects and arrays to store the data, so you can start using it right now.
 
 ## API
 
@@ -158,12 +158,12 @@ Returns an frozen object with the freezer data.
 // Logs: {a: 'hola', b:[1,2, [3,4,5]], c: false }
 console.log( store.get() ); 
 ```
-The data returned is actually formed by arrays and objects, but they are sealed to prevent their mutation and they have some methods in them to update the curxor.
+The data returned is actually formed by arrays and objects, but they are sealed to prevent their mutation and they have some methods in them to update the store.
 Everytime an update is performed, `get` will return a new frozen object.
 
 #### set( data )
 
-Replace the current curxor data with new one.
+Replace the current frozen data with new one.
 ```js
 
 // An example on how to undo an update would be like this...
@@ -181,7 +181,7 @@ console.log( store.get().c ); // false
 
 #### Events
 
-Every time that the data is updated, an `update` event is triggered on the cursor. In order to use those events use `on`, `once` and `off` methods provided by the [listener API](#listener-api) that the curxor object implements.
+Every time that the data is updated, an `update` event is triggered on the store. In order to use those events, *Freezer* stores implement the [listener API](#listener-api), and `on`, `once` and `off` methods are available on them.
 
 ## Update methods
 
@@ -288,7 +288,7 @@ data.arr.push( 3 ); //logs 'Updated!' [2,3]
 ```
 
 ## Listener API
-Freezer stores and listener implements this API that is influenced by the way Backbone handle events. The only event that Freezer emits is `update`, end is emitted on every curxor/node update.
+Freezer stores and listeners implement this API that is influenced by the way Backbone handle events. The only event that Freezer emits is `update`, end is emitted on every store/node update.
 
 #### on( eventName, callback )
 Register a function to be called when an event occurs.
@@ -300,6 +300,11 @@ Can unregister all callbacks from a listener if the `eventName` parameter is omi
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
 
 ## Changelog
+###v0.4.0
+Improved: Array nodes are now real arrays
+Fixed: Parent links are now working properly when a Freezer store is reseted.
+Removed: `toJSON` method is not needed anymore, since arrays are acutal arrays now.
+Added: Created a test HTML page.
 ###v0.3.3
 Improved: Performance on refreshing parent nodes on update.
 Added: `toJS` and `toJSON` methods on nodes to get a pure JS object from a node.

@@ -60,10 +60,7 @@ var commonMethods = {
 	}
 };
 
-// Implement toJSON in order to mimic JS objects on `JSON.stringify`
-commonMethods.toJSON = commonMethods.toJS;
-
-var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
+var arrayMethods = Utils.extend({
 	push: function( el ){
 		return this.append( [el] );
 	},
@@ -100,28 +97,10 @@ var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 
 	splice: function( index, toRemove, toAdd ){
 		return this.__.notify( 'splice', this, arguments );
-	},
-
-	concat: function( ){
-		return Array.prototype.concat.apply( this.slice(), arguments );
 	}
-}, commonMethods)));
+}, commonMethods );
 
-
-// Tweak the length property
-Object.defineProperty( FrozenArray, 'length', {
-	configurable: false,
-	enumerable: false,
-	get: function(){
-		return Object.keys( this ).length;
-	},
-	set: function( length ){
-		for( var key in this ){
-			if( key > length )
-				delete this[ key ];
-		}
-	}
-});
+var FrozenArray = Object.create( Array.prototype, createNE( arrayMethods ) );
 
 var Mixins = {
 
@@ -145,7 +124,8 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 	}
 }, commonMethods))),
 
-List: FrozenArray
+List: FrozenArray,
+arrayMethods: arrayMethods
 };
 //#build
 

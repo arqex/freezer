@@ -1,6 +1,9 @@
-var assert = require('assert'),
-	Freezer = require( '../freezer.js')
-;
+// Conditional definition to work also in the browser
+// tests where Freezer is global
+if( typeof Freezer == 'undefined' ){
+	var Freezer = require( '../freezer.js' );
+	var assert = require('assert');
+}
 
 var freezer, data;
 
@@ -115,7 +118,8 @@ describe("Freezer events test", function(){
 		var listener = data.c.getListener();
 
 		listener.on( 'update', function( updated ){
-			assert.deepEqual( updated, [0,1,2,3] );
+			assert.equal( updated[0], 0 );
+			assert.equal( updated[3], 3 );
 			done();
 		});
 
@@ -130,7 +134,9 @@ describe("Freezer events test", function(){
 		var listener = data.b.getListener();
 
 		listener.on( 'update', function( updated ){
-			assert.deepEqual( updated, {z:0, y:3, a:2} );
+			assert.equal( updated.y, 3 );
+			assert.equal( updated.x, undefined );
+			assert.equal( updated.a, 2);
 			done();
 		});
 
@@ -138,19 +144,6 @@ describe("Freezer events test", function(){
 			.set( { y: 3} )
 			.remove( 'x' )
 			.set( {a: 2} )
-		;
-	});
-
-	it( "Chained calls should trigger update with all changes applied", function( done ){
-		freezer.on( 'update', function( updated ){
-			assert.deepEqual( updated.c, [0,1,2,3] );
-			done();
-		});
-
-		data.c
-			.pop()
-			.push( 3 )
-			.unshift( 0 )
 		;
 	});
 });
