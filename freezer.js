@@ -1,4 +1,4 @@
-/* freezer-js v0.3.3 (15-2-2015)
+/* freezer-js v0.4.0 (20-2-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: GNU-v2
@@ -246,10 +246,7 @@ var commonMethods = {
 	}
 };
 
-// Implement toJSON in order to mimic JS objects on `JSON.stringify`
-commonMethods.toJSON = commonMethods.toJS;
-
-var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
+var arrayMethods = Utils.extend({
 	push: function( el ){
 		return this.append( [el] );
 	},
@@ -286,28 +283,10 @@ var FrozenArray = Object.create( Array.prototype, createNE( Utils.extend({
 
 	splice: function( index, toRemove, toAdd ){
 		return this.__.notify( 'splice', this, arguments );
-	},
-
-	concat: function( ){
-		return Array.prototype.concat.apply( this.slice(), arguments );
 	}
-}, commonMethods)));
+}, commonMethods );
 
-
-// Tweak the length property
-Object.defineProperty( FrozenArray, 'length', {
-	configurable: false,
-	enumerable: false,
-	get: function(){
-		return Object.keys( this ).length;
-	},
-	set: function( length ){
-		for( var key in this ){
-			if( key > length )
-				delete this[ key ];
-		}
-	}
-});
+var FrozenArray = Object.create( Array.prototype, createNE( arrayMethods ) );
 
 var Mixins = {
 
@@ -331,7 +310,8 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 	}
 }, commonMethods))),
 
-List: FrozenArray
+List: FrozenArray,
+arrayMethods: arrayMethods
 };
 
 var Frozen = {
@@ -345,7 +325,7 @@ var Frozen = {
 		;
 
 		if( node.constructor == Array ){
-			frozen = Object.create( Mixins.List );
+			frozen = this.createArray( node.length );
 		}
 		else {
 			frozen = Object.create( Mixins.Hash );
@@ -392,6 +372,16 @@ var Frozen = {
 			frozen = value;
 			frozen.__.listener = value.__.listener;
 			frozen.__.parents = [];
+
+			// Set back the parent on the children
+			// that have been updated
+			this.fixChildren( frozen, node );
+			Utils.each( frozen, function( child ){
+				if( child && child.__ ){
+					me.removeParent( node );
+					me.addParent( child, frozen );
+				}
+			});
 		}
 		else {
 			frozen = this.freeze( node, node.__.notify );
@@ -565,6 +555,30 @@ var Frozen = {
 		this.refreshParents( node, frozen );
 	},
 
+	fixChildren: function( node, oldNode ){
+		var me = this;
+		Utils.each( node, function( child ){
+			if( !child || !child.__ )
+				return;
+
+			// If the child is linked to the node,
+			// maybe its children are not linked
+			if( child.__.parents.indexOf( node ) != -1 )
+				return me.fixChildren( child );
+
+			// If the child wasn't linked it is sure
+			// that it wasn't modified. Just link it
+			// to the new parent
+			if( child.__.parents.length == 1 )
+				return child.__.parents = [ node ];
+
+			if( oldNode )
+				me.removeParent( child, oldNode );
+
+			me.addParent( node );
+		});
+	},
+
 	clean: function( node ){
 		return this.refresh( node, __.dirty[0], __.dirty[1], true );
 	},
@@ -575,7 +589,7 @@ var Frozen = {
 		;
 
 		if( node.constructor == Array ){
-			frozen = Object.create( Mixins.List );
+			frozen = this.createArray( node.length );
 		}
 		else {
 			frozen = Object.create( Mixins.Hash );
@@ -667,7 +681,7 @@ var Frozen = {
 		if( !l ) {
 			l = Object.create(Emitter, {
 				_events: {
-					value: [],
+					value: {},
 					writable: true
 				}
 			});
@@ -676,7 +690,26 @@ var Frozen = {
 		}
 
 		return l;
-	}
+	},
+
+	createArray: (function(){
+		// Set createArray method
+		if( [].__proto__ )
+			return function( length ){
+				var arr = new Array( length );
+				arr.__proto__ = Mixins.List;
+				return arr;
+			}
+		return function( length ){
+			var arr = new Array( length ),
+				methods = Mixins.arrayMethods
+			;
+			for( var m in methods ){
+				arr[ m ] = methods[ m ];
+			}
+			return arr;
+		}
+	})()
 };
 
 var Freezer = function( initialValue ) {
