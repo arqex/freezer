@@ -2,7 +2,7 @@
 
 A tree data structure that is always updated from the root, even if the modification is triggered by one of the leaves, making easier to think in a reactive way.
 
-Freezer is made with React.js in mind and uses real immutable structures. It is a tool or a replacement for the flux architecture. 
+Freezer is made with React.js in mind and uses real immutable structures, it is the perfect store for your Flux implementation. 
 
 What makes Freezer special is:
 
@@ -23,7 +23,7 @@ Also as a bower package
 bower install freezer-js
 ```
 
-It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~13KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~6KB).
+It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~13KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~7KB).
 
 ## Example of use
 ```js
@@ -38,10 +38,10 @@ var store = new Freezer({
     d: null // It is possible to store whatever
 });
 
-// Let's get the data stored
+// Let's get the frozen data stored
 var data = store.get();
 
-// Listen on changes in the store
+// Listen to changes in the store
 store.on('update', function(){
     console.log( 'I was updated' );
 });
@@ -58,7 +58,7 @@ data.a.z.forEach( function( item ){
 data.d = 3; console.log( data.d ); // logs null
 data.e = 4; console.log( data.e ); // logs undefined
 
-// to update use methods like set
+// to update, use methods like set that returns new frozen data
 var updated = data.set( 'e', 4 ); // On next tick it will log 'I was updated'
 
 console.log( data.e ); // Still logs undefined
@@ -73,7 +73,7 @@ data.a === updated.a; // true
 data.b === updated.b; // true
 
 // Updates can be chained because the new immutable
-// store node is always returned
+// data node is always returned
 var updatedB = updated.b.push( 100 )
     .shift()
     .set(0, 'Updated')
@@ -110,7 +110,7 @@ store.get() === data; // true
 
 In the other hand, data changes always flowing in the same direction is what make Flux architecure so easy to reason about. If we let every component to update the data independently we are building a mess again.
 
-So *Freezer*, instead of letting the child component to update the data directly, gives to the component the tools to require the change. The updates are always made by the root of the store and the data can keep flowing just in one direction.
+So *Freezer*, instead of letting the child component to update the data directly, gives in every node the tools to require the change. The updates are always made by the root of the store and the data can keep flowing just in one direction.
 
 Imagine that we have the following tree structure as our app store: ![Initial tree](img/initialTree.png)
 
@@ -127,7 +127,7 @@ Then, *Freezer* will create a new immutable data structure starting from the top
 
 Since the whole tree is updated, we can have the main app state in one single object and make the top level components re-render in a reactive way to changes that are made deep in the store hierarchy.
 
-**Freezer** is very influenced by the way that [Facebook's Immutable](https://github.com/facebook/immutable-js) handles immutabilty. It creates a new tree every time that a modification is required referencing the non modified nodes from the previous tree. Sharing node references among immutable objects saves memory and boost the performance on creating new immutables.
+**Freezer** is very influenced by the way that [Facebook's Immutable](https://github.com/facebook/immutable-js) handles immutabilty. It creates a new tree every time that a modification is required referencing the non modified nodes from the previous tree. Sharing node references among frozen objects saves memory and boost the performance on creating new frozens.
 
 Using immutability with React is great, because you don't need to make deep comparisons in order to know when to update a component:
 ```js
