@@ -217,7 +217,7 @@ console.log( store.get() )
 ```
 
 #### toJS()
-*Freezer* nodes are immutable, and array ones are not pure JS arrays but objects that inherit from arrays. `toJS` transform *Freezer* nodes to plain mutable JS objects in case you need them.
+*Freezer* nodes are immutable. `toJS` transform *Freezer* nodes to plain mutable JS objects in case you need them.
 ```js
 // Require node.js assert
 var assert = require('assert');
