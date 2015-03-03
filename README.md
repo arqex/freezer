@@ -119,7 +119,7 @@ And we have a component responsible of handling the `store.c.f` ( the yellow nod
 // The component receives a part of the freezer data
 this.props.branch = { h: 4, i: 5};
 ```
-Eventually the component is used to update `store.c.f.h = 8`. With *Freezer* instead of dispatching an action, as it would be done with *Flux*, those kind of changes can be done using the data itself:
+Eventually the component is used to update `store.c.f.h = 8`. You can dispatch an action with the frozen node as the payload ( making easier for your actions know what to update ), or even use the node itself to require the change:
 ```js
 this.props.branch.set( {h: 8} );
 ```
@@ -300,6 +300,8 @@ Can unregister all callbacks from a listener if the `eventName` parameter is omi
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
 
 ## Changelog
+###v0.4.1
+Licensed changed to MIT.
 ###v0.4.0
 Improved: Array nodes are now real arrays
 Fixed: Parent links are now working properly when a Freezer store is reseted.

@@ -1,7 +1,7 @@
-/* freezer-js v0.4.0 (20-2-2015)
+/* freezer-js v0.4.1 (3-3-2015)
  * https://github.com/arqex/freezer
  * By arqex
- * License: GNU-v2
+ * License: MIT
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
