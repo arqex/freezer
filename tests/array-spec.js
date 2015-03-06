@@ -132,6 +132,13 @@ describe("Freezer array test", function(){
 
 		assert.deepEqual(data.c.splice(0, Number.MAX_VALUE), []);
 	});
+	it( "Replace all from array", function(){
+		var replacement = [10, 20, 30, 40];
+		var removedArr = data.c.splice(0)
+			.append(replacement);
+
+		assert.deepEqual( removedArr, replacement );
+	});
 
 	it( "#toJS", function(){
 		assert.deepEqual( data.c.toJS(), example.c );

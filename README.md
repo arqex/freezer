@@ -244,10 +244,23 @@ var updated = store.get()
 console.log( updated ); //{a: 'hola'}
 ```
 
+#### reset( newNode )
+Reset/replaces the node with the newNode
+
+```js
+var store = new Freezer({ foobar: {a: 'a', b: 'b', c: [0, 1, 2] } });
+
+var newfoobar = { foo: 'bar', bar: 'foo' };
+
+var reset = data.foobar.reset(newfoobar);
+
+console.log( reset ); //{ foo: 'bar', bar: 'foo' }
+```
+
 ## Array methods
 Array nodes have modified versions of the `push`, `pop`, `unshift`, `shift` and `splice` methods that update the cursor and return the new node, instead of updating the immutable array node ( that would be impossible ).
 ```js
-var store = new Cursor({ arr: [0,1,2,3,4] });
+var store = new Freezer({ arr: [0,1,2,3,4] });
 
 store.get().arr
     .push( 5 ) // [0,1,2,3,4,5]
@@ -260,12 +273,26 @@ store.get().arr
 
 Array nodes also have the `append` and `prepend` methods to batch insert elements at the begining or the end of the array.
 ```js
-var store = new Cursor({ arr: [2] });
+var store = new Freezer({ arr: [2] });
 
 store.get().arr
     .prepend([0,1]) // [0,1,2]
     .append([3,4]) // [0,1,2,3,4]
 ;
+```
+
+Note that arrays do not have a `reset` method available, in case you need to 
+
+##### remove all elements of an array use
+```js
+var store = new Freezer({ arr: [0, 1, 2, 3, 4] });
+store.get().arr.splice(0); // returns []
+```
+##### replace the entire contents of an array use
+```js
+var store = new Freezer({ arr: [0, 1, 2, 3, 4] });
+var replacement = [10, 20, 30, 40];
+store.get().arr.splice(0).append(replacement); // returns [10, 20, 30, 40]
 ```
 
 ## Events
