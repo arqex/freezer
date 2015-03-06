@@ -82,7 +82,7 @@ var Frozen = {
 		return frozen;
 	},
 
-	replace: function( node, attrs ){
+	merge: function( node, attrs ){
 		var me = this,
 			frozen = this.copyMeta( node ),
 			notify = node.__.notify,
