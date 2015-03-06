@@ -121,7 +121,12 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 		if( filtered.length )
 			return this.__.notify( 'remove', this, filtered );
 		return this;
+	},
+
+	reset: function( attrs ) {
+		return this.__.notify( 'replaceself', this, attrs );
 	}
+
 }, commonMethods))),
 
 List: FrozenArray,

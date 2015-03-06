@@ -135,7 +135,31 @@ var Frozen = {
 
 		return frozen;
 	},
+	replaceself: function( node, attrs ) {
+		var me = this,
+			frozen = this.copyMeta( node ),
+			notify = node.__.notify,
+			val, cons, key
+		;
+		for( key in attrs ) {
+			val = attrs[ key ];
+			cons = val && val.constructor;
 
+			if( cons == Array || cons == Object )
+				val = me.freeze( val, notify );
+
+			if( val && val.__ )
+				me.addParent( val, frozen );
+
+			frozen[ key ] = val;
+		}
+
+		Object.freeze( frozen );
+
+		this.refreshParents( node, frozen );
+
+		return frozen;
+	},
 	remove: function( node, attrs ){
 		var me = this,
 			frozen = this.copyMeta( node ),

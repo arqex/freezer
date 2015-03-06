@@ -146,4 +146,16 @@ describe("Freezer events test", function(){
 			.set( {a: 2} )
 		;
 	});
+
+	it( "Reset of node should trigger an update", function( done ){
+		var foobar = { foo: 'bar', bar: 'foo' };
+
+		freezer.on( 'update', function(newData){
+			assert.deepEqual( newData.b, foobar );
+			done();
+		});
+
+		data.b.reset( foobar );
+	});
+
 });

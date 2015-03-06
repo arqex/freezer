@@ -139,6 +139,19 @@ describe("Freezer test", function(){
 		assert.equal( second.c, data.c );
 		assert.equal( second.b.y, data.b.y );
 	});
+	it( "reset an object node", function(){
+		var foobar = { foo: 'bar', bar: 'foo' };
+		var reset = data.b.reset(foobar);
+
+		assert.deepEqual( reset, foobar );
+
+		var updated = freezer.getData().b;
+		assert.equal( reset, updated );
+
+	});
+	it( "reset is not available for array nodes", function(){
+		assert.equal( data.c.reset, undefined );
+	});
 
 	it( "Chaining calls", function(){
 		var chained = data.set( {e: 9} )
@@ -148,6 +161,7 @@ describe("Freezer test", function(){
 		var updated = freezer.getData();
 
 		assert.equal( chained, updated );
+
 	});
 
 	it( "#toJSON", function(){
