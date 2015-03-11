@@ -123,22 +123,22 @@ describe("Freezer array test", function(){
 		assert.deepEqual( concat, ['A','B','C','D'] );
 	});
 
-	it( "Remove all from array", function(){
-		var removedArr = data.c.splice(0);
-		assert.deepEqual( removedArr, [] );
+	it( "Reset an array", function(){
+		var arr = [0,1,2];
 
-		var updated = freezer.getData();
-		assert.deepEqual( updated.c, [] );
+		var updated = data.c.reset( arr );
 
-		assert.deepEqual(data.c.splice(0, Number.MAX_VALUE), []);
+		assert.deepEqual(updated, arr);
+		assert.deepEqual(freezer.getData().c, arr);
 	});
-	it( "Replace all from array", function(){
-		var replacement = [10, 20, 30, 40];
-		var removedArr = data.c.splice(0)
-			.append(replacement);
 
-		assert.deepEqual( removedArr, replacement );
+	it( "Reset an array by null", function(){
+		var updated = data.c.reset( null );
+
+		assert.deepEqual(updated, null);
+		assert.deepEqual(freezer.getData().c, null);
 	});
+
 
 	it( "#toJS", function(){
 		assert.deepEqual( data.c.toJS(), example.c );

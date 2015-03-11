@@ -36,6 +36,10 @@ var commonMethods = {
 		return this.__.notify( 'merge', this, attrs );
 	},
 
+	reset: function( attrs ) {
+		return this.__.notify( 'replace', this, attrs );
+	},
+
 	getListener: function(){
 		return this.__.notify( 'listener', this );
 	},
@@ -121,12 +125,7 @@ Hash: Object.create( Object.prototype, createNE( Utils.extend({
 		if( filtered.length )
 			return this.__.notify( 'remove', this, filtered );
 		return this;
-	},
-
-	reset: function( attrs ) {
-		return this.__.notify( 'replaceself', this, attrs );
 	}
-
 }, commonMethods))),
 
 List: FrozenArray,

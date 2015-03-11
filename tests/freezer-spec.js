@@ -21,8 +21,7 @@ describe("Freezer test", function(){
 	});
 
 	it( "Create a freezer object", function(){
-		console.log( data.b );
-		console.log( example.b );
+
 		assert.equal( data.a, example.a );
 		assert.equal( data.b.z, example.b.z );
 		assert.equal( data.b.x[0], example.b.x[0] );
@@ -138,19 +137,6 @@ describe("Freezer test", function(){
 		assert.equal( second.e, undefined );
 		assert.equal( second.c, data.c );
 		assert.equal( second.b.y, data.b.y );
-	});
-	it( "reset an object node", function(){
-		var foobar = { foo: 'bar', bar: 'foo' };
-		var reset = data.b.reset(foobar);
-
-		assert.deepEqual( reset, foobar );
-
-		var updated = freezer.getData().b;
-		assert.equal( reset, updated );
-
-	});
-	it( "reset is not available for array nodes", function(){
-		assert.equal( data.c.reset, undefined );
 	});
 
 	it( "Chaining calls", function(){

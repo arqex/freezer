@@ -135,31 +135,41 @@ var Frozen = {
 
 		return frozen;
 	},
-	replaceself: function( node, attrs ) {
+
+	replace: function( node, replacement ) {
+
 		var me = this,
-			frozen = this.copyMeta( node ),
-			notify = node.__.notify,
-			val, cons, key
+			cons = replacement && replacement.constructor,
+			__ = node.__,
+			frozen = replacement
 		;
-		for( key in attrs ) {
-			val = attrs[ key ];
-			cons = val && val.constructor;
 
-			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify );
+		if( cons == Array || cons == Object ) {
+			frozen = me.freeze( replacement, __.notify );
+			frozen.__.parents = __.parents;
 
-			if( val && val.__ )
-				me.addParent( val, frozen );
+			// Add the current listener if exists, replacing a
+			// previous listener in the frozen if existed
+			if( __.listener )
+				frozen.__.listener = node.__.listener;
 
-			frozen[ key ] = val;
+			// Since the parents will be refreshed directly,
+			// Trigger the listener here
+			if( frozen.__.listener )
+				this.trigger( frozen, 'update', frozen );
 		}
 
-		Object.freeze( frozen );
-
-		this.refreshParents( node, frozen );
+		// Refresh the parent nodes directly
+		for (var i = __.parents.length - 1; i >= 0; i--) {
+			if( i == 0 )
+				this.refresh( __.parents[i], node, frozen, false );
+			else
+				this.markDirty( __.parents[i], [node, frozen] );
+		}
 
 		return frozen;
 	},
+
 	remove: function( node, attrs ){
 		var me = this,
 			frozen = this.copyMeta( node ),
@@ -312,6 +322,7 @@ var Frozen = {
 		}
 
 		var __ = node.__;
+
 		Utils.addNE( frozen, {__: {
 			notify: __.notify,
 			listener: __.listener,
