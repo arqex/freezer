@@ -123,6 +123,23 @@ describe("Freezer array test", function(){
 		assert.deepEqual( concat, ['A','B','C','D'] );
 	});
 
+	it( "Reset an array", function(){
+		var arr = [0,1,2];
+
+		var updated = data.c.reset( arr );
+
+		assert.deepEqual(updated, arr);
+		assert.deepEqual(freezer.getData().c, arr);
+	});
+
+	it( "Reset an array by null", function(){
+		var updated = data.c.reset( null );
+
+		assert.deepEqual(updated, null);
+		assert.deepEqual(freezer.getData().c, null);
+	});
+
+
 	it( "#toJS", function(){
 		assert.deepEqual( data.c.toJS(), example.c );
 	});

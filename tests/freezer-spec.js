@@ -21,8 +21,7 @@ describe("Freezer test", function(){
 	});
 
 	it( "Create a freezer object", function(){
-		console.log( data.b );
-		console.log( example.b );
+
 		assert.equal( data.a, example.a );
 		assert.equal( data.b.z, example.b.z );
 		assert.equal( data.b.x[0], example.b.x[0] );
@@ -148,6 +147,7 @@ describe("Freezer test", function(){
 		var updated = freezer.getData();
 
 		assert.equal( chained, updated );
+
 	});
 
 	it( "#toJSON", function(){

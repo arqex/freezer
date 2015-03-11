@@ -18,7 +18,7 @@ var createArrayTree = function( leaf ){
 	return root;
 };
 
-// Add for levels in the tree
+// Add four levels in the tree
 var root = arr;
 for (var i = 0; i < 2; i++) {
 	root = createArrayTree( createHashTree( root ) );

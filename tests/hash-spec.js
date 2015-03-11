@@ -145,6 +145,15 @@ describe("Freezer hash test", function(){
 		assert.equal( third, fourth );
 	});
 
+	it( "Reset an object", function(){
+		var foobar = { foo: 'bar', bar: 'foo' },
+			updated = data.b.reset( foobar )
+		;
+
+		assert.deepEqual( updated, foobar );
+		assert.equal( freezer.getData().b, updated );
+	});
+
 	it( "#toJS", function(){
 		assert.deepEqual( data.toJS(), example );
 	});

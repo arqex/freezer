@@ -33,6 +33,10 @@ var commonMethods = {
 			attrs[ attr ] = value;
 		}
 
+		return this.__.notify( 'merge', this, attrs );
+	},
+
+	reset: function( attrs ) {
 		return this.__.notify( 'replace', this, attrs );
 	},
 

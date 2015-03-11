@@ -11,6 +11,10 @@ What makes Freezer special is:
 * No dependencies.
 * Lightweight: ~7KB minified (much less if gzipped).
 * Packaged as UMD module to be loaded everywhere.
+* Uses common JS array and objects to store the data.
+
+## Demos
+* [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it 
 
 ## Installation
 Freezer is available as a npm package.
@@ -199,7 +203,7 @@ console.log( udpatedArr ); // [0,1,2]
 console.log( store.get() ); 
 ```
 
- Both, *Array* and *Hashes* have a `set` method to update or add elements.
+ Both, *Array* and *Hashes* nodes have a `set` method to update or add elements to the node and a `reset` method to replace the node by other data.
 
 #### set( keyOrHash, value )
 Arrays and hashes can update their children using the `set` method. It accepts a hash with the keys and values to update or two arguments, the key and the value.
@@ -214,6 +218,19 @@ store.get().arr.set( 0, 0 );
 
 // {obj: {a:'hola', b:'bye', c:'ciao'}, arr: [0,2]}
 console.log( store.get() )
+```
+
+#### reset( newData )
+Reset/replaces the node with new data. Listeners are preserved if the new data is an `array` or `object`, so it is possible to listen to reset calls. 
+
+```js
+var store = new Freezer({ foobar: {a: 'a', b: 'b', c: [0, 1, 2] } });
+
+var newfoobar = { foo: 'bar', bar: 'foo' };
+
+var reset = data.foobar.reset(newfoobar);
+
+console.log( reset ); //{ foo: 'bar', bar: 'foo' }
 ```
 
 #### toJS()
@@ -244,10 +261,11 @@ var updated = store.get()
 console.log( updated ); //{a: 'hola'}
 ```
 
+
 ## Array methods
 Array nodes have modified versions of the `push`, `pop`, `unshift`, `shift` and `splice` methods that update the cursor and return the new node, instead of updating the immutable array node ( that would be impossible ).
 ```js
-var store = new Cursor({ arr: [0,1,2,3,4] });
+var store = new Freezer({ arr: [0,1,2,3,4] });
 
 store.get().arr
     .push( 5 ) // [0,1,2,3,4,5]
@@ -260,7 +278,7 @@ store.get().arr
 
 Array nodes also have the `append` and `prepend` methods to batch insert elements at the begining or the end of the array.
 ```js
-var store = new Cursor({ arr: [2] });
+var store = new Freezer({ arr: [2] });
 
 store.get().arr
     .prepend([0,1]) // [0,1,2]
@@ -300,22 +318,4 @@ Can unregister all callbacks from a listener if the `eventName` parameter is omi
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
 
 ## Changelog
-###v0.4.1
-Licensed changed to MIT.
-###v0.4.0
-Improved: Array nodes are now real arrays
-Fixed: Parent links are now working properly when a Freezer store is reseted.
-Removed: `toJSON` method is not needed anymore, since arrays are acutal arrays now.
-Added: Created a test HTML page.
-###v0.3.3
-Improved: Performance on refreshing parent nodes on update.
-Added: `toJS` and `toJSON` methods on nodes to get a pure JS object from a node.
-Removed: Path legacy code from curxor.js
-###v0.3.2
-Fixed: Chained calls should trigger update with the value of all operations. https://github.com/arqex/freezer/issues/2
-###v0.3.1
-Fixed: A cloned node in a frozen should update all the parents at the same time.
-Fixed: Array concat method doesn't work as expected. https://github.com/arqex/freezer/issues/1
-###v0.3.0
-First released version after forking curxor.
-Binding nodes using references to parents.
+[Here](https://github.com/arqex/freezer/blob/master/CHANGELOG.md)

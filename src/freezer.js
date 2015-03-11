@@ -20,7 +20,7 @@ var Freezer = function( initialValue ) {
 		var updated = Frozen.update( eventName, node, options );
 
 		if( !updated )
-			return Utils.error( 'Can\'t udpate. The node is not in the freezer.' );
+			return Utils.error( 'Can\'t update. The node is not in the freezer.' );
 
 		return updated;
 	};

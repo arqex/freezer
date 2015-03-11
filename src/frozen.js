@@ -82,7 +82,7 @@ var Frozen = {
 		return frozen;
 	},
 
-	replace: function( node, attrs ){
+	merge: function( node, attrs ){
 		var me = this,
 			frozen = this.copyMeta( node ),
 			notify = node.__.notify,
@@ -132,6 +132,40 @@ var Frozen = {
 		Object.freeze( frozen );
 
 		this.refreshParents( node, frozen );
+
+		return frozen;
+	},
+
+	replace: function( node, replacement ) {
+
+		var me = this,
+			cons = replacement && replacement.constructor,
+			__ = node.__,
+			frozen = replacement
+		;
+
+		if( cons == Array || cons == Object ) {
+			frozen = me.freeze( replacement, __.notify );
+			frozen.__.parents = __.parents;
+
+			// Add the current listener if exists, replacing a
+			// previous listener in the frozen if existed
+			if( __.listener )
+				frozen.__.listener = node.__.listener;
+
+			// Since the parents will be refreshed directly,
+			// Trigger the listener here
+			if( frozen.__.listener )
+				this.trigger( frozen, 'update', frozen );
+		}
+
+		// Refresh the parent nodes directly
+		for (var i = __.parents.length - 1; i >= 0; i--) {
+			if( i == 0 )
+				this.refresh( __.parents[i], node, frozen, false );
+			else
+				this.markDirty( __.parents[i], [node, frozen] );
+		}
 
 		return frozen;
 	},
@@ -288,6 +322,7 @@ var Frozen = {
 		}
 
 		var __ = node.__;
+
 		Utils.addNE( frozen, {__: {
 			notify: __.notify,
 			listener: __.listener,
