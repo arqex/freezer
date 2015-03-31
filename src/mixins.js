@@ -26,11 +26,23 @@ var createNE = function( attrs ){
 
 var commonMethods = {
 	set: function( attr, value ){
-		var attrs = attr;
+		var attrs = attr,
+			update = this.__.trans
+		;
 
 		if( typeof value != 'undefined' ){
 			attrs = {};
 			attrs[ attr ] = value;
+		}
+
+		if( !update ){
+			for( var key in attrs ){
+				update = update || this[ key ] != attrs[ key ];
+			}
+
+			// No changes, just return the node
+			if( !update )
+				return this;
 		}
 
 		return this.__.notify( 'merge', this, attrs );
@@ -61,6 +73,13 @@ var commonMethods = {
 		});
 
 		return js;
+	},
+
+	transact: function(){
+		return this.__.notify( 'transact', this );
+	},
+	run: function(){
+		return this.__.notify( 'run', this );
 	}
 };
 

@@ -13,6 +13,18 @@ What makes Freezer special is:
 * Packaged as UMD module to be loaded everywhere.
 * Uses common JS array and objects to store the data.
 
+Do you want to know more?
+
+* [Demos](#Demos)
+* [Installation](#Installation)
+* [Example](#Installation)
+* [Motivation](#Installation)
+* [Freezer API](#Installation)
+* [Updating the data](#Installation)
+* [Events](#Installation)
+* [Batch updates](#Installation)
+* [Changelog](#Installation)
+
 ## Demos
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it 
 
@@ -316,6 +328,41 @@ Register a function to be called once when an event occurs. After being called t
 Can unregister all callbacks from a listener if the `eventName` parameter is omitted, or all the callbacks for a `eventName` if the `callback` parameter is omitted.
 #### trigger( eventName [, param, param, ...] )
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
+
+## Batch updates
+At some point you will find yourself wanting to apply multiple changes on some node at a time. On every change the full tree is re-generated, but probably the only tree needed is the final result of all those changes. 
+
+Freezer nodes offer a `transact` method to make local modifications to them without generating intermediate frozen trees, and a `run` method to commit all the changes at once. This way your app can have a really good performance.
+
+```js
+var frozen = new Freezer({list:[]}),
+    data = frozen.get()
+;
+
+// transact returns a mutable object
+// to make all the local changes
+var trans = data.list.transact();
+
+// trans is a common array
+for( var i = 0; i < 1000; i++ )
+    trans.push(i);
+
+// use it as a normal array
+trans[0] = 1000; // [1000, 1, 2, ..., 999]
+
+// the store does not know about the yet
+frozen.get().list.length == 0; // true
+
+// to commit the changes use the run method in the node
+data.list.run();
+
+// all the changes are made at once
+frozen.get().list; // [1000, 1, 2, ..., 999]
+```
+
+Transactions are designed to always commit the changes, so if you start a transaction but you forget to call `run`, it will be called automatically on the next tick.
+
+It is possible to update children nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confussion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve its performance much because of having a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior. 
 
 ## Changelog
 [Here](https://github.com/arqex/freezer/blob/master/CHANGELOG.md)

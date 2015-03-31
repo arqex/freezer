@@ -7,7 +7,7 @@ var Utils = require( './utils.js' ),
 ;
 
 //#build
-var Freezer = function( initialValue ) {
+var Freezer = function( initialValue, mutable ) {
 	var me = this;
 
 	// Immutable data
@@ -17,16 +17,15 @@ var Freezer = function( initialValue ) {
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
-		var updated = Frozen.update( eventName, node, options );
-
-		if( !updated )
-			return Utils.error( 'Can\'t update. The node is not in the freezer.' );
-
-		return updated;
+		return Frozen.update( eventName, node, options );
 	};
 
+	var freeze = function(){};
+	if( !mutable )
+		freeze = function( obj ){ Object.freeze( obj ); };
+
 	// Create the frozen object
-	frozen = Frozen.freeze( initialValue, notify );
+	frozen = Frozen.freeze( initialValue, notify, freeze );
 
 	// Listen to its changes immediately
 	var listener = frozen.getListener();

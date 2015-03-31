@@ -1,4 +1,8 @@
 # Freezer Changelog
+###v0.5.0
+* Fixed: Now duplicated nodes are updated properly when they are children of the root node.
+* Added: Transactions
+* Added: Non-frozen nodes.
 
 ###v0.4.2
 * Added: `reset` method to nodes.
