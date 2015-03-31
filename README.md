@@ -15,15 +15,15 @@ What makes Freezer special is:
 
 Do you want to know more?
 
-* [Demos](#Demos)
-* [Installation](#Installation)
-* [Example](#Installation)
-* [Motivation](#Installation)
-* [Freezer API](#Installation)
-* [Updating the data](#Installation)
-* [Events](#Installation)
-* [Batch updates](#Installation)
-* [Changelog](#Installation)
+* [Demos](#demos)
+* [Installation](#installation)
+* [Example](#example-of-use)
+* [Motivation](#why-another-store)
+* [Freezer API](#api)
+* [Updating the data](#update-methods)
+* [Events](#events-1)
+* [Batch updates](#batch-updates)
+* [Changelog](#changelog)
 
 ## Demos
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it 
