@@ -1,4 +1,4 @@
-/* freezer-js v0.5.0 (31-3-2015)
+/* freezer-js v0.5.0 (7-4-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -41,15 +41,9 @@ var Utils = {
 
 	each: function( o, clbk ){
 		var i,l,keys;
-		if( o && o.constructor == Array ){
-			for (i = 0, l = o.length; i < l; i++)
-				clbk( o[i], i );
-		}
-		else {
-			keys = Object.keys( o );
-			for( i = 0, l = keys.length; i < l; i++ )
-				clbk( o[ keys[i] ], keys[i] );
-		}
+		keys = Object.keys( o );
+		for( i = 0, l = keys.length; i < l; i++ )
+			clbk( o[ keys[i] ], keys[i] );
 	},
 
 	addNE: function( node, attrs ){

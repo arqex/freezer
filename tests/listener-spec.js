@@ -5,16 +5,16 @@ if( typeof Freezer == 'undefined' ){
 	var assert = require('assert');
 }
 
-var freezer, data;
-
-var example = {
-	a: 1,
-	b: { z: 0, y: 1, x:[ 'A', 'B'] },
-	c: [1, 2, {w: 3}],
-	d: null
-};
-
 describe("Freezer events test", function(){
+	var freezer, data;
+
+	var example = {
+		a: 1,
+		b: { z: 0, y: 1, x:[ 'A', 'B'] },
+		c: [1, 2, {w: 3}],
+		d: null
+	};
+
 	beforeEach( function(){
 		freezer = new Freezer( example );
 		data = freezer.getData();
