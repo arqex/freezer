@@ -5,16 +5,21 @@ if( typeof Freezer == 'undefined' ){
 	var assert = require('assert');
 }
 
-var freezer, data;
-
-var example = {
-	a: 1,
-	b: { z: 0, y: 1, x:[ 'A', 'B'] },
-	c: [1, 2, {w: 3}],
-	d: null
-};
-
 describe("Freezer test", function(){
+	var freezer, data;
+
+	var arrayWithExtras = [1, 2, 3];
+	arrayWithExtras.extra1 = 'A';
+	arrayWithExtras.extra2 = { a: 'b' };
+
+	var example = {
+		a: 1,
+		b: { z: 0, y: 1, x:[ 'A', 'B'] },
+		c: [1, 2, {w: 3}],
+		d: null,
+		e: arrayWithExtras
+	};
+
 	beforeEach( function(){
 		freezer = new Freezer( example );
 		data = freezer.getData();
@@ -28,6 +33,7 @@ describe("Freezer test", function(){
 		assert.equal( data.c[0], example.c[0] );
 		assert.equal( data.c[2].w, example.c[2].w );
 		assert.equal( data.d, example.d);
+		assert.equal( data.e[0], example.e[0]);
 	});
 
 	it( "Leaves dont have an __", function(){
@@ -54,6 +60,7 @@ describe("Freezer test", function(){
 		assert.equal( updated.b, data.b );
 		assert.equal( updated.c, data.c );
 		assert.equal( updated.d, data.d );
+		assert.equal( updated.e, data.e );
 	});
 
 	it( "Update an array value", function(){
@@ -75,6 +82,16 @@ describe("Freezer test", function(){
 		assert.equal( updated.b, data.b );
 		assert.equal( updated.c[0], data.c[0] );
 		assert.equal( updated.c[2], data.c[2] );
+	});
+
+	it( "Update an array value that is not indexed", function(){
+		data.e.set({'extra1': 'B'});
+
+		var updated = freezer.getData();
+
+		assert.equal( updated.e.extra1, 'B' );
+		assert.notEqual( updated, data );
+		assert.notEqual( updated.e, data.e );
 	});
 
 	it( "Duplicate node", function(){
@@ -134,7 +151,7 @@ describe("Freezer test", function(){
 		var second = freezer.getData();
 
 		assert.equal( second, data );
-		assert.equal( second.e, undefined );
+		assert.equal( second.f, undefined );
 		assert.equal( second.c, data.c );
 		assert.equal( second.b.y, data.b.y );
 	});
@@ -148,6 +165,11 @@ describe("Freezer test", function(){
 
 		assert.equal( chained, updated );
 
+	});
+
+	it( "Preserve additional data stored on array", function(){
+		assert.equal(data.e.extra1, arrayWithExtras.extra1);
+		assert.deepEqual(data.e.extra2, arrayWithExtras.extra2);
 	});
 
 	it( "#toJSON", function(){
