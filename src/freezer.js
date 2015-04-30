@@ -10,62 +10,63 @@ var Utils = require( './utils.js' ),
 var Freezer = function( initialValue, mutable ) {
 	var me = this;
 
-	// Immutable data
-	var frozen;
+	var freeze = function(){};
+	if( !mutable )
+		freeze = function( obj ){ Object.freeze( obj ); };
 
-	var notify = function notify( eventName, node, options ){
+	me._notify = function( eventName, node, options ){
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
 		return Frozen.update( eventName, node, options );
 	};
 
-	var freeze = function(){};
-	if( !mutable )
-		freeze = function( obj ){ Object.freeze( obj ); };
-
 	// Create the frozen object
-	frozen = Frozen.freeze( initialValue, notify, freeze );
+	me._frozen = Frozen.freeze( initialValue, me._notify, freeze );
 
 	// Listen to its changes immediately
-	var listener = frozen.getListener();
+	var listener = me._frozen.getListener();
 
 	// Updating flag to trigger the event on nextTick
 	var updating = false;
 
 	listener.on( 'immediate', function( prevNode, updated ){
-		if( prevNode != frozen )
+		if( prevNode != me._frozen )
 			return;
 
-		frozen = updated;
+		me._frozen = updated;
 
 		// Trigger on next tick
 		if( !updating ){
 			updating = true;
 			Utils.nextTick( function(){
 				updating = false;
-				me.trigger( 'update', frozen );
+				me.trigger( 'update', me._frozen );
 			});
 		}
 	});
-
-	Utils.addNE( this, {
-		get: function(){
-			return frozen;
-		},
-		set: function( node ){
-			var newNode = notify( 'reset', frozen, node );
-			newNode.__.listener.trigger( 'immediate', frozen, newNode );
-		}
-	});
-
-	Utils.addNE( this, { getData: this.get, setData: this.set } );
 
 	// The event store
 	this._events = [];
 }
 
-Freezer.prototype = Utils.createNonEnumerable({}, Emitter);
+var freezerMethods = {
+	get: function(){
+		return this._frozen;
+	},
+
+	set: function( node ){
+		var newNode = this._notify( 'reset', this._frozen, node );
+		newNode.__.listener.trigger( 'immediate', this._frozen, newNode );
+	}
+};
+
+freezerMethods.getData = freezerMethods.get;
+freezerMethods.setData = freezerMethods.set;
+
+Freezer.prototype = Utils.createNonEnumerable(freezerMethods, Emitter);
+// Copy manually because it's non-enumerable
+Freezer.prototype.constructor = Freezer;
 //#build
 
 module.exports = Freezer;
