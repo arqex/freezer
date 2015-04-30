@@ -11,13 +11,6 @@ var Utils = {
 		return ob;
 	},
 
-	createNonEnumerable: function( obj, proto ){
-		var ne = {};
-		for( var key in obj )
-			ne[key] = {value: obj[key] };
-		return Object.create( proto || {}, ne );
-	},
-
 	error: function( message ){
 		var err = new Error( message );
 		if( console )

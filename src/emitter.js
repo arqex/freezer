@@ -75,7 +75,8 @@ var emitterProto = {
 // Methods are not enumerable so, when the stores are
 // extended with the emitter, they can be iterated as
 // hashmaps
-var Emitter = Utils.createNonEnumerable( emitterProto );
+var Emitter = {};
+Emitter.__proto__ = emitterProto;
 //#build
 
 module.exports = Emitter;

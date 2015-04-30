@@ -65,7 +65,7 @@ var Freezer = function( initialValue, mutable ) {
 	this._events = [];
 }
 
-Freezer.prototype = Utils.createNonEnumerable({}, Emitter);
+Freezer.prototype.__proto__ = Emitter;
 //#build
 
 module.exports = Freezer;
