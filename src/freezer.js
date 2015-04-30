@@ -65,7 +65,9 @@ var Freezer = function( initialValue, mutable ) {
 	this._events = [];
 }
 
-Freezer.prototype = Utils.createNonEnumerable({}, Emitter);
+Freezer.prototype = Utils.createNonEnumerable(Freezer.prototype, Emitter);
+// Restore the constructor because it's non-enumerable
+Freezer.prototype.constructor = Freezer;
 //#build
 
 module.exports = Freezer;
