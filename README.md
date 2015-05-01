@@ -208,7 +208,7 @@ Freezer data has three different types of nodes: *Hashes*, *Arrays* and *leaf no
 ```js
 var store = new Freezer({obj: {a:'hola', b:'adios'}, arr: [1,2]});
 
-var updatedObj = store.get().obj.update('a', 'hello');
+var updatedObj = store.get().obj.set('a', 'hello');
 console.log( updatedObj ); // {a:'hello', b:'adios'}
 
 var updatedArr = store.get().arr.unshift( 0 );
