@@ -46,7 +46,7 @@ It is possible to download the [full version](https://raw.githubusercontent.com/
 ## Example of use
 ```js
 // Browserify/Node style of loading
-var Freezer = require('freezer');
+var Freezer = require('freezer-js');
 
 // Let's create a freezer store
 var store = new Freezer({
