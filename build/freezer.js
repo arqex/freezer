@@ -1,4 +1,4 @@
-/* freezer-js v0.5.0 (31-3-2015)
+/* freezer-js v0.5.1 (1-5-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -950,7 +950,7 @@ var Freezer = function( initialValue, mutable ) {
 	this._events = [];
 }
 
-Freezer.prototype = Utils.createNonEnumerable({}, Emitter);
+Freezer.prototype = Utils.createNonEnumerable({constructor: Freezer}, Emitter);
 
 	return Freezer;
 }));

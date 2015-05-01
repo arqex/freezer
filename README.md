@@ -60,8 +60,9 @@ var store = new Freezer({
 var data = store.get();
 
 // Listen to changes in the store
-store.on('update', function(newValue){
-    console.log( newValue );
+store.on('update', function( newValue ){
+    // New value will have the updated store's data
+    console.log( 'I was updated' );
 });
 
 // The data is read as usual

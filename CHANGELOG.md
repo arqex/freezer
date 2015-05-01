@@ -1,4 +1,8 @@
 # Freezer Changelog
+###v0.5.1
+* Fixed some typos in the readme file
+* Freezer is now extendable using ES6 classes
+
 ###v0.5.0
 * Fixed: Now duplicated nodes are updated properly when they are children of the root node.
 * Added: Transactions
