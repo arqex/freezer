@@ -3,6 +3,7 @@
 A tree data structure that is always updated from the root, even if the modification is triggered by one of the leaves, making easier to think in a reactive way.
 
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/freezer)
+[![npm version](https://badge.fury.io/js/freezer-js.svg)](http://badge.fury.io/js/freezer-js)
 
 Freezer is made with React.js in mind and uses real immutable structures, it is the perfect store for your Flux implementation. 
 
