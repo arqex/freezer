@@ -14,7 +14,7 @@ What makes Freezer special is:
 * No dependencies.
 * Lightweight: ~7KB minified (much less if gzipped).
 * Packaged as UMD module to be loaded everywhere.
-* Uses common JS array and objects to store the data.
+* Uses common JS array and objects to store the data, so you can use it with your favourite libs like [lodash](https://lodash.com/), [underscore](http://underscorejs.org/) or [ramda](http://ramdajs.com/)
 
 Do you want to know more?
 
