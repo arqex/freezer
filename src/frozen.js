@@ -85,7 +85,11 @@ var Frozen = {
 	},
 
 	merge: function( node, attrs ){
-		var trans = node.__.trans;
+		var trans = node.__.trans,
+
+			// Clone the attrs to not modify the argument
+			attrs = Utils.extend( {}, attrs)
+		;
 
 		if( trans ){
 
@@ -126,6 +130,7 @@ var Frozen = {
 
 			frozen[ key ] = val;
 		});
+
 
 		for( key in attrs ) {
 			val = attrs[ key ];
@@ -173,6 +178,9 @@ var Frozen = {
 		}
 
 		// Refresh the parent nodes directly
+		if( !__.parents.length && __.listener ){
+			__.listener.trigger( 'immediate', node, frozen );
+		}
 		for (var i = __.parents.length - 1; i >= 0; i--) {
 			if( i == 0 ){
 				this.refresh( __.parents[i], node, frozen, false );
@@ -334,7 +342,7 @@ var Frozen = {
 			Utils.each( trans, function( child, key ){
 				if( found ) return;
 
-				if( child == oldChild ){
+				if( child === oldChild ){
 
 					trans[ key ] = newChild;
 					found = 1;
@@ -358,10 +366,10 @@ var Frozen = {
 		}
 
 		Utils.each( node, function( child, key ){
-			if( child == oldChild ){
+			if( child === oldChild ){
 				child = newChild;
 			}
-			else if( child == dirt ){
+			else if( child === dirt ){
 				child = replacement;
 			}
 

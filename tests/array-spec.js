@@ -139,9 +139,9 @@ describe("Freezer array test", function(){
 		assert.deepEqual(freezer.getData().c, null);
 	});
 
-
 	it( "#toJS", function(){
 		assert.deepEqual( data.c.toJS(), example.c );
 	});
+
 
 });

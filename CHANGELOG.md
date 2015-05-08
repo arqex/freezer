@@ -1,4 +1,10 @@
 # Freezer Changelog
+###v0.5.2
+* Fixed reseting top nodes not updating the store
+* Fixed some == comparisons that would modify incorrect attributes.
+* Fixed modifying the object passed to `set` as argument.
+* Added the playground to the readme file.
+
 ###v0.5.1
 * Fixed some typos in the readme file
 * Freezer is now extendable using ES6 classes

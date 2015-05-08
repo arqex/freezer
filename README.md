@@ -28,6 +28,7 @@ Do you want to know more?
 * [Changelog](#changelog)
 
 ## Demos
+* [You can **test** freezer.js in this JSbin](http://jsbin.com/fedeva/4/edit?js,console)
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it 
 
 ## Installation
@@ -44,6 +45,7 @@ bower install freezer-js
 It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~13KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~7KB).
 
 ## Example of use
+You can play with [this example in JSBin](http://jsbin.com/suvoxivizi/2/edit?js,console).
 ```js
 // Browserify/Node style of loading
 var Freezer = require('freezer-js');

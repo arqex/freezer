@@ -21,13 +21,26 @@ describe("Freezer hash test", function(){
 	});
 
 	it( "Add a new element to a hash", function(){
-		var chained = data.b.set({e:5});
+		var update = {e:5},
+			chained = data.b.set(update)
+		;
 
 		var updated = freezer.getData();
 
+		assert.deepEqual( update, {e:5} );
 		assert.equal( chained, updated.b );
 		assert.notEqual( updated, data );
 		assert.equal( updated.b.e, 5 );
+	});
+
+	it( "Setting an object in the root must not modify the object", function(){
+		var update = {d:1},
+			updated = data.set(update)
+		;
+
+		assert.deepEqual( update, {d:1} );
+		assert.equal( updated.d, 1 );
+		assert.equal( freezer.get().d, 1 );
 	});
 
 	it( "Add a new element to a hash doesnt modify other hash elements", function(){

@@ -154,4 +154,13 @@ describe("Freezer test", function(){
 		assert.equal( JSON.stringify( data ), JSON.stringify( example ) );
 	});
 
+	it( "Set should work in the current node, not in the nodes == to the curent ", function(){
+		var freezer = new Freezer({a:0, b:[], c:false, d:null});
+
+		freezer.get().b.push(1);
+
+		console.log( freezer.get() );
+		assert.deepEqual( freezer.get(), {a:0, b:[1], c:false, d: null} );
+	});
+
 });
