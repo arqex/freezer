@@ -76,6 +76,16 @@ describe("Freezer hash test", function(){
 		assert.equal( freezer.get().b.z, 10 );
 	});
 
+	it("Node updates should return the updated node", function(){
+		var updated = data.b.x.push(1)
+			.push(2)
+			.push(3)
+		;
+
+		assert.deepEqual( freezer.get().b.x, [ 'A', 'B', 1, 2, 3] );
+		assert.deepEqual( updated, [ 'A', 'B', 1, 2, 3] );
+	});
+
 	it( "Remove a hash element", function(){
 		var chained = data.remove('a');
 

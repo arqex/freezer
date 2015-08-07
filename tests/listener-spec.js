@@ -97,9 +97,10 @@ describe("Freezer events test", function(){
 			done();
 		});
 
-		freezer.get().b.set( {c: 1} );
-		freezer.get().b.set( {c: 2} );
-		freezer.get().b.set( {c: 3} );
+		freezer.get().b.set( {c: 1} )
+			.set( {c: 2} )
+			.set( {c: 3} )
+		;
 	});
 
 	it( "Listen to multiple root updates, live mode", function( done ){
@@ -115,9 +116,10 @@ describe("Freezer events test", function(){
 			}
 		});
 
-		freezer.get().b.set( {c: 1} );
-		freezer.get().b.set( {c: 2} );
-		freezer.get().b.set( {c: 3} );
+		freezer.get().b.set( {c: 1} )
+			.set( {c: 2} )
+			.set( {c: 3} )
+		;
 	});
 
 	it( "Listen to updates adding a duplicate", function( done ){
