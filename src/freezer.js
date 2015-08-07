@@ -7,8 +7,11 @@ var Utils = require( './utils.js' ),
 ;
 
 //#build
-var Freezer = function( initialValue, mutable ) {
-	var me = this;
+var Freezer = function( initialValue, options ) {
+	var me = this,
+		mutable = ( options && options.mutable ) || false,
+		live = ( options && options.live ) || live
+	;
 
 	// Immutable data
 	var frozen;
@@ -25,7 +28,7 @@ var Freezer = function( initialValue, mutable ) {
 		freeze = function( obj ){ Object.freeze( obj ); };
 
 	// Create the frozen object
-	frozen = Frozen.freeze( initialValue, notify, freeze );
+	frozen = Frozen.freeze( initialValue, notify, freeze, live );
 
 	// Listen to its changes immediately
 	var listener = frozen.getListener();
@@ -36,6 +39,9 @@ var Freezer = function( initialValue, mutable ) {
 	listener.on( 'immediate', function( prevNode, updated ){
 		if( prevNode != frozen )
 			return;
+
+		if( live )
+			return me.trigger( 'update', updated );
 
 		frozen = updated;
 
