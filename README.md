@@ -171,7 +171,19 @@ Create a freezer object using the constructor:
 ```js
 var store = new Freezer({a: 'hola', b:[1,2, [3,4,5]], c: false });
 ```
+
+A freezer object can accept options on initialization:
+```js
+var store = new Freezer({hi: 'hello'}, {mutable: true, live:true});
+```
+| Name         | Type    | Default | Description |
+| ------------ | ------- | ------- | ----------- |
+| **mutable** | boolean | `false` | Once you are get used to freezer, you can see that immutability is not necessary if you learn that you shouldn't update the data directly. In that case, disable immutability in case that you need a small boost in performance. |
+| **live** | boolean | `false` | With live mode on, freezer triggers the update events just when the changes happen, instead of batch all the changes and trigger the event on the next tick. This is useful if you want freezer to store input field values. |
+
 And then, Freezer API is really simple and only have 2 methods: `get` and `set`. A freezer object also implements the [listener API](#listener-api).
+
+
 
 #### get()
 

@@ -9,7 +9,7 @@ var freezer, data;
 
 var example = {
 	a: 1,
-	b: { z: 0, y: 1, x:[ 'A', 'B'] },
+	b: { z: 0, y: 1, x:[ 'A', 'B' ] },
 	c: [1, 2, {w: 3}],
 	d: null
 };
@@ -52,6 +52,38 @@ describe("Freezer hash test", function(){
 		assert.equal( updated.b.z, data.b.z );
 		assert.equal( updated.b.y, data.b.y );
 		assert.equal( updated.b.x, data.b.x );
+	});
+
+	it( "Setting a detached element should has no effect on others", function(){
+		var b, x = data.b.x;
+
+		x.push(1);
+		x.push(2);
+		x.push(3);
+
+		b = freezer.get().b;
+		b.set({ y:7 });
+		b.set({ y:8 });
+		b.set({ y:9 });
+
+		b = freezer.get().b;
+		b.set({z:10});
+		b.set({z:11});
+		b.set({z:12});
+
+		assert.deepEqual( freezer.get().b.x, [ 'A', 'B', 1] );
+		assert.equal( freezer.get().b.y, 7 );
+		assert.equal( freezer.get().b.z, 10 );
+	});
+
+	it("Node updates should return the updated node", function(){
+		var updated = data.b.x.push(1)
+			.push(2)
+			.push(3)
+		;
+
+		assert.deepEqual( freezer.get().b.x, [ 'A', 'B', 1, 2, 3] );
+		assert.deepEqual( updated, [ 'A', 'B', 1, 2, 3] );
 	});
 
 	it( "Remove a hash element", function(){

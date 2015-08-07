@@ -29,7 +29,9 @@ describe("Freezer events test", function(){
 	});
 
 	it( "Listen to node updates", function( done ){
-		var listener = data.b.getListener();
+		var listener = data.b.getListener(),
+			count = 0
+		;
 
 		listener.on( 'update', function( data ){
 			try {
@@ -45,6 +47,39 @@ describe("Freezer events test", function(){
 		data.b.set( {c: 3} );
 	});
 
+	it( "Listen to multiple node updates", function( done ){
+		var listener = data.b.getListener(),
+			count = 0
+		;
+
+		freezer.on( 'update', function( data ){
+			assert.equal( data.b.c, 3 );
+			done();
+		});
+
+		freezer.get().b.set( {c: 1} );
+		freezer.get().b.set( {c: 2} );
+		freezer.get().b.set( {c: 3} );
+	});
+
+	it( "Listen to multiple node updates, live mode", function( done ){
+		var freezer = new Freezer( example, { live: true } ),
+			listener = freezer.get().b.getListener(),
+			count = 0
+		;
+
+		freezer.on( 'update', function( data ){
+			if( ++count == 3 ){
+				assert.equal( data.b.c, 3 );
+				done();
+			}
+		});
+
+		freezer.get().b.set( {c: 1} );
+		freezer.get().b.set( {c: 2} );
+		freezer.get().b.set( {c: 3} );
+	});
+
 	it( "Listen to root updates", function( done ){
 
 		freezer.on( 'update', function(){
@@ -53,6 +88,38 @@ describe("Freezer events test", function(){
 		});
 
 		data.b.set( {c: 3} );
+	});
+
+	it( "Listen to multiple root updates", function( done ){
+		freezer.on( 'update', function( data ){
+			assert.equal( data.b.c, 3 );
+			assert.equal( freezer.get().b.c, 3 );
+			done();
+		});
+
+		freezer.get().b.set( {c: 1} )
+			.set( {c: 2} )
+			.set( {c: 3} )
+		;
+	});
+
+	it( "Listen to multiple root updates, live mode", function( done ){
+		var freezer = new Freezer( example, { live: true }),
+			count = 0
+		;
+
+		freezer.on( 'update', function( data ){
+			if( ++count == 3 ){
+				assert.equal( data.b.c, 3 );
+				assert.equal( freezer.get().b.c, 3 );
+				done();
+			}
+		});
+
+		freezer.get().b.set( {c: 1} )
+			.set( {c: 2} )
+			.set( {c: 3} )
+		;
 	});
 
 	it( "Listen to updates adding a duplicate", function( done ){

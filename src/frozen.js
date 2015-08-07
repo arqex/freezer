@@ -7,7 +7,7 @@ var Utils = require( './utils' ),
 
 //#build
 var Frozen = {
-	freeze: function( node, notify, freezeFn ){
+	freeze: function( node, notify, freezeFn, live ){
 		if( node && node.__ ){
 			return node;
 		}
@@ -28,14 +28,15 @@ var Frozen = {
 			parents: [],
 			notify: notify,
 			dirty: false,
-			freezeFn: freezeFn
+			freezeFn: freezeFn,
+			live: live || false
 		}});
 
 		// Freeze children
 		Utils.each( node, function( child, key ){
 			cons = child && child.constructor;
 			if( cons == Array || cons == Object ){
-				child = me.freeze( child, notify, freezeFn );
+				child = me.freeze( child, notify, freezeFn, live );
 			}
 
 			if( child && child.__ ){
@@ -78,7 +79,7 @@ var Frozen = {
 			});
 		}
 		else {
-			frozen = this.freeze( node, node.__.notify, node.__.freezeFn );
+			frozen = this.freeze( node, node.__.notify, node.__.freezeFn, node.__.live );
 		}
 
 		return frozen;
@@ -121,7 +122,7 @@ var Frozen = {
 			cons = val && val.constructor;
 
 			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, node.__.freezeFn );
+				val = me.freeze( val, notify, node.__.freezeFn, node.__.live );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -137,7 +138,7 @@ var Frozen = {
 			cons = val && val.constructor;
 
 			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, node.__.freezeFn );
+				val = me.freeze( val, notify, node.__.freezeFn, node.__.live );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -162,7 +163,7 @@ var Frozen = {
 
 		if( cons == Array || cons == Object ) {
 
-			frozen = me.freeze( replacement, __.notify, __.freezeFn );
+			frozen = me.freeze( replacement, __.notify, __.freezeFn, __.live );
 
 			frozen.__.parents = __.parents;
 
@@ -265,7 +266,7 @@ var Frozen = {
 				con = child && child.constructor;
 
 				if( con == Array || con == Object )
-					child = this.freeze( child, __.notify, __.freezeFn );
+					child = this.freeze( child, __.notify, __.freezeFn, __.live );
 
 				if( child && child.__ )
 					this.addParent( child, frozen );

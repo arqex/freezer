@@ -1,4 +1,9 @@
 # Freezer Changelog
+###v0.6.0
+* Added options to freezer initialization.
+* Added mutable option in order of create mutable freezer objects.
+* Added live mode option.
+
 ###v0.5.2
 * Fixed reseting top nodes not updating the store
 * Fixed some == comparisons that would modify incorrect attributes.

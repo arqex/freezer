@@ -8,7 +8,7 @@ var B = require('benchmark'),
 
 var suite = new B.Suite(),
 	store = new Freezer( initialData ),
-	mutable = new Freezer( initialData, true ),
+	mutable = new Freezer( initialData, {mutable: true} ),
 	data = store.getData(),
 	leaf = data[1][0][0][0][0],
 	mutableData = mutable.get(),
@@ -33,7 +33,7 @@ suite
 		new Freezer( initialData );
 	})
 	.add( 'Freezer mutable creation', function(){
-		new Freezer( initialData, true );
+		new Freezer( initialData, {mutable: true} );
 	})
 	.add( 'Immutable creation', function(){
 		Immutable.fromJS( initialData );
