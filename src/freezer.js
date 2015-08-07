@@ -40,10 +40,10 @@ var Freezer = function( initialValue, options ) {
 		if( prevNode != frozen )
 			return;
 
+		frozen = updated;
+
 		if( live )
 			return me.trigger( 'update', updated );
-
-		frozen = updated;
 
 		// Trigger on next tick
 		if( !updating ){

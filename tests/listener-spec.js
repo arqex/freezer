@@ -93,6 +93,7 @@ describe("Freezer events test", function(){
 	it( "Listen to multiple root updates", function( done ){
 		freezer.on( 'update', function( data ){
 			assert.equal( data.b.c, 3 );
+			assert.equal( freezer.get().b.c, 3 );
 			done();
 		});
 
@@ -109,6 +110,7 @@ describe("Freezer events test", function(){
 		freezer.on( 'update', function( data ){
 			if( ++count == 3 ){
 				assert.equal( data.b.c, 3 );
+				assert.equal( freezer.get().b.c, 3 );
 				done();
 			}
 		});
