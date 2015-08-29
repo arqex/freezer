@@ -30,10 +30,10 @@ var commonMethods = {
 			update = this.__.trans
 		;
 
-		if( typeof value != 'undefined' ){
+		//if( typeof value != 'undefined' ){
 			attrs = {};
 			attrs[ attr ] = value;
-		}
+		//}
 
 		if( !update ){
 			for( var key in attrs ){
