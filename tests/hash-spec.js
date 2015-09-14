@@ -203,4 +203,14 @@ describe("Freezer hash test", function(){
 		assert.deepEqual( data.toJS(), example );
 	});
 
+	it( "Delete, reset and delete", function(){
+
+		data.remove( 'b' );
+
+		freezer.set( data );
+		freezer.get().remove('b');
+
+		assert.deepEqual( freezer.get().b, undefined );
+	});
+
 });

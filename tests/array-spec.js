@@ -143,5 +143,26 @@ describe("Freezer array test", function(){
 		assert.deepEqual( data.c.toJS(), example.c );
 	});
 
+	it( "Delete,restore and delete an array", function(){
+		var arr = data.c;
+		data
+			.remove( 'c' )
+			.set( {c: arr} )
+			.remove( 'c' )
+		;
+
+		assert.equal( freezer.get().c, undefined );
+	});
+
+	it( "Delete,restore and delete an item of an array", function(){
+		var arr = data.c;
+		data
+			.remove( 'c' )
+			.set( {c: arr} )
+			.c.splice( 2, 1 )
+		;
+
+		assert.deepEqual( freezer.get().c, [1,2] );
+	});
 
 });

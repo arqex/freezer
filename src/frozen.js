@@ -422,7 +422,7 @@ var Frozen = {
 			if( oldNode )
 				me.removeParent( child, oldNode );
 
-			me.addParent( node );
+			me.addParent( child, node );
 		});
 	},
 
