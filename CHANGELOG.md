@@ -1,4 +1,9 @@
 # Freezer Changelog
+
+###v0.6.1
+* Fixed binding parents to the nodes on reset.
+* Fixed not removing an specific listener when using `off`.
+
 ###v0.6.0
 * Added options to freezer initialization.
 * Added mutable option in order of create mutable freezer objects.

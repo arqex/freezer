@@ -60,6 +60,7 @@ var Frozen = {
 
 	reset: function( node, value ){
 		var me = this,
+			_ = node.__,
 			frozen
 		;
 
@@ -79,14 +80,15 @@ var Frozen = {
 			});
 		}
 		else {
-			frozen = this.freeze( node, node.__.notify, node.__.freezeFn, node.__.live );
+			frozen = this.freeze( node, _.notify, _.freezeFn, _.live );
 		}
 
 		return frozen;
 	},
 
 	merge: function( node, attrs ){
-		var trans = node.__.trans,
+		var _ = node.__,
+			trans = _.trans,
 
 			// Clone the attrs to not modify the argument
 			attrs = Utils.extend( {}, attrs)
@@ -101,7 +103,7 @@ var Frozen = {
 
 		var me = this,
 			frozen = this.copyMeta( node ),
-			notify = node.__.notify,
+			notify = _.notify,
 			val, cons, key, isFrozen
 		;
 
@@ -122,7 +124,7 @@ var Frozen = {
 			cons = val && val.constructor;
 
 			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, node.__.freezeFn, node.__.live );
+				val = me.freeze( val, notify, _.freezeFn, _.live );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -138,7 +140,7 @@ var Frozen = {
 			cons = val && val.constructor;
 
 			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, node.__.freezeFn, node.__.live );
+				val = me.freeze( val, notify, _.freezeFn, _.live );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -146,7 +148,7 @@ var Frozen = {
 			frozen[ key ] = val;
 		}
 
-		node.__.freezeFn( frozen );
+		_.freezeFn( frozen );
 
 		this.refreshParents( node, frozen );
 
@@ -157,20 +159,20 @@ var Frozen = {
 
 		var me = this,
 			cons = replacement && replacement.constructor,
-			__ = node.__,
+			_ = node.__,
 			frozen = replacement
 		;
 
 		if( cons == Array || cons == Object ) {
 
-			frozen = me.freeze( replacement, __.notify, __.freezeFn, __.live );
+			frozen = me.freeze( replacement, _.notify, _.freezeFn, _.live );
 
-			frozen.__.parents = __.parents;
+			frozen.__.parents = _.parents;
 
 			// Add the current listener if exists, replacing a
 			// previous listener in the frozen if existed
-			if( __.listener )
-				frozen.__.listener = node.__.listener;
+			if( _.listener )
+				frozen.__.listener = _.listener;
 
 			// Since the parents will be refreshed directly,
 			// Trigger the listener here
@@ -179,16 +181,16 @@ var Frozen = {
 		}
 
 		// Refresh the parent nodes directly
-		if( !__.parents.length && __.listener ){
-			__.listener.trigger( 'immediate', node, frozen );
+		if( !_.parents.length && _.listener ){
+			_.listener.trigger( 'immediate', node, frozen );
 		}
-		for (var i = __.parents.length - 1; i >= 0; i--) {
+		for (var i = _.parents.length - 1; i >= 0; i--) {
 			if( i == 0 ){
-				this.refresh( __.parents[i], node, frozen, false );
+				this.refresh( _.parents[i], node, frozen, false );
 			}
 			else{
 
-				this.markDirty( __.parents[i], [node, frozen] );
+				this.markDirty( _.parents[i], [node, frozen] );
 			}
 		}
 		return frozen;
@@ -231,7 +233,10 @@ var Frozen = {
 	},
 
 	splice: function( node, args ){
-		var trans = node.__.trans;
+		var _ = node.__,
+			trans = _.trans
+		;
+
 		if( trans ){
 			trans.splice.apply( trans, args );
 			return node;
@@ -241,7 +246,6 @@ var Frozen = {
 			frozen = this.copyMeta( node ),
 			index = args[0],
 			deleteIndex = index + args[1],
-			__ = node.__,
 			con, child
 		;
 
@@ -266,7 +270,7 @@ var Frozen = {
 				con = child && child.constructor;
 
 				if( con == Array || con == Object )
-					child = this.freeze( child, __.notify, __.freezeFn, __.live );
+					child = this.freeze( child, _.notify, _.freezeFn, _.live );
 
 				if( child && child.__ )
 					this.addParent( child, frozen );
@@ -438,62 +442,62 @@ var Frozen = {
 			frozen = Object.create( Mixins.Hash );
 		}
 
-		var __ = node.__;
+		var _ = node.__;
 
 		Utils.addNE( frozen, {__: {
-			notify: __.notify,
-			listener: __.listener,
-			parents: __.parents.slice( 0 ),
-			trans: __.trans,
+			notify: _.notify,
+			listener: _.listener,
+			parents: _.parents.slice( 0 ),
+			trans: _.trans,
 			dirty: false,
-			freezeFn: __.freezeFn
+			freezeFn: _.freezeFn
 		}});
 
 		return frozen;
 	},
 
 	refreshParents: function( oldChild, newChild ){
-		var __ = oldChild.__,
+		var _ = oldChild.__,
 			i
 		;
 
-		if( __.listener )
+		if( _.listener )
 			this.trigger( newChild, 'update', newChild );
 
-		if( !__.parents.length ){
-			if( __.listener ){
-				__.listener.trigger( 'immediate', oldChild, newChild );
+		if( !_.parents.length ){
+			if( _.listener ){
+				_.listener.trigger( 'immediate', oldChild, newChild );
 			}
 		}
 		else {
-			for (i = __.parents.length - 1; i >= 0; i--) {
+			for (i = _.parents.length - 1; i >= 0; i--) {
 				// If there is more than one parent, mark everyone as dirty
 				// but the last in the iteration, and when the last is refreshed
 				// it will update the dirty nodes.
 				if( i == 0 )
-					this.refresh( __.parents[i], oldChild, newChild, false );
+					this.refresh( _.parents[i], oldChild, newChild, false );
 				else{
 
-					this.markDirty( __.parents[i], [oldChild, newChild] );
+					this.markDirty( _.parents[i], [oldChild, newChild] );
 				}
 			}
 		}
 	},
 
 	markDirty: function( node, dirt ){
-		var __ = node.__,
+		var _ = node.__,
 			i
 		;
-		__.dirty = dirt;
+		_.dirty = dirt;
 
 		// If there is a transaction happening in the node
 		// update the transaction data immediately
-		if( __.trans )
+		if( _.trans )
 			this.refresh( node, dirt[0], dirt[1] );
 
-		for ( i = __.parents.length - 1; i >= 0; i-- ) {
+		for ( i = _.parents.length - 1; i >= 0; i-- ) {
 
-			this.markDirty( __.parents[i], dirt );
+			this.markDirty( _.parents[i], dirt );
 		}
 	},
 
@@ -503,7 +507,6 @@ var Frozen = {
 		;
 
 		if( index != -1 ){
-
 			parents.splice( index, 1 );
 		}
 	},

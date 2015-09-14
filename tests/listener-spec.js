@@ -245,4 +245,23 @@ describe("Freezer events test", function(){
 		freezer.getData().b.set('foo', 'bar');
 	});
 
+	it( "Removing a listener", function( done ){
+
+		var called = false,
+			handler = function(update){
+				if( called )
+					throw new Error("The listener has not been removed");
+
+				called = true;
+				assert.equal( update.b, undefined );
+				freezer.off('update', handler);
+				update.remove('a');
+				setTimeout( done, 100 );
+			}
+		;
+
+		freezer.on('update', handler);
+		data.remove('b');
+	});
+
 });
