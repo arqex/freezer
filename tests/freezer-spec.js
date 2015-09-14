@@ -158,9 +158,18 @@ describe("Freezer test", function(){
 		var freezer = new Freezer({a:0, b:[], c:false, d:null});
 
 		freezer.get().b.push(1);
-
-		console.log( freezer.get() );
 		assert.deepEqual( freezer.get(), {a:0, b:[1], c:false, d: null} );
 	});
 
+	it( "Pivot", function(){
+		var update = data.pivot()
+			.b.set({u: 10})
+			.b.x.push( 'C' )
+			.c[2].remove('w')
+		;
+
+		assert.equal( update.b.u, 10 );
+		assert.equal( update.b.x[2], 'C' );
+		assert.equal( update.c[2].w, undefined);
+	});
 });

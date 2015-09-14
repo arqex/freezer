@@ -99,7 +99,42 @@ var Utils = {
       }
 
       return nextTick;
-  })()
+  })(),
+
+  findPivot: function( node ){
+  		if( !node || !node.__ )
+  			return;
+
+  		if( node.__.pivot )
+  			return node;
+
+  		var found = 0,
+  			parents = node.__.parents,
+  			i = 0,
+  			parent
+  		;
+
+  		// Look up for the pivot in the parents
+  		while( !found && i < parents.length ){
+  			parent = parents[i];
+  			if( parent.__.pivot )
+  				found = parent;
+  			i++;
+  		}
+
+  		if( found ){
+  			return found;
+  		}
+
+  		// If not found, try with the parent's parents
+  		i=0;
+  		while( !found && i < parents.length ){
+	  		found = this.findPivot( parents[i] );
+	  		i++;
+	  	}
+
+  		return found;
+  }
 };
 //#build
 

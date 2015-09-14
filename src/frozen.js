@@ -336,6 +336,14 @@ var Frozen = {
 		return result;
 	},
 
+	pivot: function( node ){
+		node.__.pivot = 1;
+		Utils.nextTick( function(){
+			node.__.pivot = 0;
+		});
+		return node;
+	},
+
 	refresh: function( node, oldChild, newChild, returnUpdated ){
 		var me = this,
 			trans = node.__.trans,
@@ -450,7 +458,8 @@ var Frozen = {
 			parents: _.parents.slice( 0 ),
 			trans: _.trans,
 			dirty: false,
-			freezeFn: _.freezeFn
+			freezeFn: _.freezeFn,
+			pivot: _.pivot
 		}});
 
 		return frozen;

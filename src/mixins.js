@@ -78,8 +78,17 @@ var commonMethods = {
 	transact: function(){
 		return this.__.notify( 'transact', this );
 	},
+
 	run: function(){
 		return this.__.notify( 'run', this );
+	},
+
+	now: function(){
+		return this.__.notify( 'now' );
+	},
+
+	pivot: function(){
+		return this.__.notify( 'pivot', this );
 	}
 };
 

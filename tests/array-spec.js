@@ -151,18 +151,7 @@ describe("Freezer array test", function(){
 			.remove( 'c' )
 		;
 
-		assert.equal( freezer.get().c, undefined );
-	});
-
-	it( "Delete,restore and delete an item of an array", function(){
-		var arr = data.c;
-		data
-			.remove( 'c' )
-			.set( {c: arr} )
-			.c.splice( 2, 1 )
-		;
-
-		assert.deepEqual( freezer.get().c, [1,2] );
+		assert.deepEqual( freezer.get().c, undefined );
 	});
 
 });

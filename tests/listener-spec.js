@@ -264,4 +264,50 @@ describe("Freezer events test", function(){
 		data.remove('b');
 	});
 
+	it( "Now is synchronous", function(){
+		var triggered = 0;
+
+		var handler = function( update ){
+			assert.equal( update.a, 2 );
+			assert.equal( freezer.get().a, 2 );
+			triggered++;
+		};
+		freezer.on( 'update', handler );
+		freezer.get().set({a:2}).now();
+		freezer.off( 'update', handler );
+
+
+		handler = function( update ){
+			assert.equal( update.b, undefined );
+			assert.equal( freezer.get().b, undefined );
+			triggered++;
+		};
+		freezer.on( 'update', handler );
+		freezer.get().remove('b').now();
+		freezer.off( 'update', handler );
+
+
+		handler = function( update ){
+			assert.equal( update.c[3], 3 );
+			assert.equal( freezer.get().c[3], 3 );
+			triggered++;
+		};
+		freezer.on( 'update', handler );
+		freezer.get().c.push(3).now();
+		freezer.off( 'update', handler );
+
+
+		handler = function( update ){
+			assert.equal( update.c[0], 2 );
+			assert.equal( freezer.get().c[0], 2 );
+			assert.equal( update.c.length, 3 );
+			triggered++;
+		};
+		freezer.on( 'update', handler );
+		freezer.get().c.shift().now();
+		freezer.off( 'update', handler );
+
+		assert.equal( triggered, 4 );
+	});
+
 });
