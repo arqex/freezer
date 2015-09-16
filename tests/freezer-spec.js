@@ -172,4 +172,21 @@ describe("Freezer test", function(){
 		assert.equal( update.b.x[2], 'C' );
 		assert.equal( update.c[2].w, undefined);
 	});
+
+	it( "Pivot must dissapear on event", function( done ){
+		var handler = function handler( newData ){
+			freezer.off('update', handler);
+			var newPivot = newData.b.set({u: 20});
+			console.log( newPivot );
+			assert.equal( newPivot.u, 20 );
+			assert.equal( newData.__.pivot, 0 );
+			done();
+		}
+		freezer.on( 'update', handler);
+
+		var updated = data.pivot()
+			.b.set({u: 10})
+		;
+		assert.equal( updated.b.u, 10 );
+	});
 });

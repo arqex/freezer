@@ -84,7 +84,7 @@ var commonMethods = {
 	},
 
 	now: function(){
-		return this.__.notify( 'now' );
+		return this.__.notify( 'now', this );
 	},
 
 	pivot: function(){

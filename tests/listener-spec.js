@@ -310,4 +310,20 @@ describe("Freezer events test", function(){
 		assert.equal( triggered, 4 );
 	});
 
+	it( "Now must be synchronous for all the nodes", function(){
+		var triggered = 0,
+			handler = function(){
+				triggered++;
+			}
+		;
+
+		freezer.on('update', handler);
+		data.getListener().on('update', handler);
+		data.c.getListener().on('update', handler);
+		data.c[2].getListener().on('update', handler);
+
+		data.c[2].set( {w:4} ).now();
+
+		assert.equal( triggered, 4 );
+	});
 });

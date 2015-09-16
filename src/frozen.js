@@ -338,10 +338,15 @@ var Frozen = {
 
 	pivot: function( node ){
 		node.__.pivot = 1;
+		this.unpivot( node );
+		return node;
+	},
+
+	unpivot: function( node ){
 		Utils.nextTick( function(){
+			console.log('unpivoting');
 			node.__.pivot = 0;
 		});
-		return node;
 	},
 
 	refresh: function( node, oldChild, newChild, returnUpdated ){
@@ -462,6 +467,9 @@ var Frozen = {
 			pivot: _.pivot
 		}});
 
+		if( _.pivot )
+			this.unpivot( frozen );
+
 		return frozen;
 	},
 
@@ -530,16 +538,24 @@ var Frozen = {
 		}
 	},
 
-	trigger: function( node, eventName, param ){
+	trigger: function( node, eventName, param, now ){
 		var listener = node.__.listener,
 			ticking = listener.ticking
 		;
+
+		if( now ){
+			if( ticking ){
+				listener.ticking = 0;
+				listener.trigger( eventName, ticking );
+			}
+			return;
+		}
 
 		listener.ticking = param;
 		if( !ticking ){
 			Utils.nextTick( function(){
 				var updated = listener.ticking;
-				listener.ticking = false;
+				listener.ticking = 0;
 				listener.trigger( eventName, updated );
 			});
 		}

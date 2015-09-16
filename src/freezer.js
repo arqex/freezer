@@ -20,16 +20,25 @@ var Freezer = function( initialValue, options ) {
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
-		if( eventName == 'now' )
-			return listener.trigger('immediate', 'now');
+		if( eventName == 'now' ){
+			if( node.__.listener ){
+				if( !node.__.parents.length )
+					node.__.listener.trigger('immediate', 'now');
+
+				Frozen.trigger( node, 'update', 0, true );
+			}
+			for (var i = 0; i < node.__.parents.length; i++) {
+				notify('now', node.__.parents[i]);
+			}
+			return;
+		}
 
 		var update = Frozen.update( eventName, node, options );
 
 		if( eventName != 'pivot' ){
 			var pivot = Utils.findPivot( update );
-			if( pivot ){
-	  			return pivot
-			}
+			if( pivot )
+	  			return pivot;
 		}
 
 		return update;

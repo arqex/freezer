@@ -1,5 +1,9 @@
 # Freezer Changelog
 
+###v0.7.0
+* Added `pivot`` method.
+* Added `now` method.
+
 ###v0.6.1
 * Fixed binding parents to the nodes on reset.
 * Fixed not removing an specific listener when using `off`.

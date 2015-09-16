@@ -1,4 +1,4 @@
-/* freezer-js v0.6.1 (14-9-2015)
+/* freezer-js v0.7.0 (16-9-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -112,7 +112,42 @@ var Utils = {
       }
 
       return nextTick;
-  })()
+  })(),
+
+  findPivot: function( node ){
+  		if( !node || !node.__ )
+  			return;
+
+  		if( node.__.pivot )
+  			return node;
+
+  		var found = 0,
+  			parents = node.__.parents,
+  			i = 0,
+  			parent
+  		;
+
+  		// Look up for the pivot in the parents
+  		while( !found && i < parents.length ){
+  			parent = parents[i];
+  			if( parent.__.pivot )
+  				found = parent;
+  			i++;
+  		}
+
+  		if( found ){
+  			return found;
+  		}
+
+  		// If not found, try with the parent's parents
+  		i=0;
+  		while( !found && i < parents.length ){
+	  		found = this.findPivot( parents[i] );
+	  		i++;
+	  	}
+
+  		return found;
+  }
 };
 
 
@@ -264,8 +299,17 @@ var commonMethods = {
 	transact: function(){
 		return this.__.notify( 'transact', this );
 	},
+
 	run: function(){
 		return this.__.notify( 'run', this );
+	},
+
+	now: function(){
+		return this.__.notify( 'now', this );
+	},
+
+	pivot: function(){
+		return this.__.notify( 'pivot', this );
 	}
 };
 
@@ -667,6 +711,19 @@ var Frozen = {
 		return result;
 	},
 
+	pivot: function( node ){
+		node.__.pivot = 1;
+		this.unpivot( node );
+		return node;
+	},
+
+	unpivot: function( node ){
+		Utils.nextTick( function(){
+			console.log('unpivoting');
+			node.__.pivot = 0;
+		});
+	},
+
 	refresh: function( node, oldChild, newChild, returnUpdated ){
 		var me = this,
 			trans = node.__.trans,
@@ -781,8 +838,12 @@ var Frozen = {
 			parents: _.parents.slice( 0 ),
 			trans: _.trans,
 			dirty: false,
-			freezeFn: _.freezeFn
+			freezeFn: _.freezeFn,
+			pivot: _.pivot
 		}});
+
+		if( _.pivot )
+			this.unpivot( frozen );
 
 		return frozen;
 	},
@@ -852,16 +913,24 @@ var Frozen = {
 		}
 	},
 
-	trigger: function( node, eventName, param ){
+	trigger: function( node, eventName, param, now ){
 		var listener = node.__.listener,
 			ticking = listener.ticking
 		;
+
+		if( now ){
+			if( ticking ){
+				listener.ticking = 0;
+				listener.trigger( eventName, ticking );
+			}
+			return;
+		}
 
 		listener.ticking = param;
 		if( !ticking ){
 			Utils.nextTick( function(){
 				var updated = listener.ticking;
-				listener.ticking = false;
+				listener.ticking = 0;
 				listener.trigger( eventName, updated );
 			});
 		}
@@ -917,7 +986,28 @@ var Freezer = function( initialValue, options ) {
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
-		return Frozen.update( eventName, node, options );
+		if( eventName == 'now' ){
+			if( node.__.listener ){
+				if( !node.__.parents.length )
+					node.__.listener.trigger('immediate', 'now');
+
+				Frozen.trigger( node, 'update', 0, true );
+			}
+			for (var i = 0; i < node.__.parents.length; i++) {
+				notify('now', node.__.parents[i]);
+			}
+			return;
+		}
+
+		var update = Frozen.update( eventName, node, options );
+
+		if( eventName != 'pivot' ){
+			var pivot = Utils.findPivot( update );
+			if( pivot )
+	  			return pivot;
+		}
+
+		return update;
 	};
 
 	var freeze = function(){};
@@ -934,6 +1024,14 @@ var Freezer = function( initialValue, options ) {
 	var updating = false;
 
 	listener.on( 'immediate', function( prevNode, updated ){
+
+		if( prevNode == 'now' ){
+			if( !updating )
+				return;
+			updating = false;
+			return me.trigger( 'update', frozen );
+		}
+
 		if( prevNode != frozen )
 			return;
 
