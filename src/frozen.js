@@ -177,7 +177,7 @@ var Frozen = {
 			// Since the parents will be refreshed directly,
 			// Trigger the listener here
 			if( frozen.__.listener )
-				this.trigger( frozen, 'update', frozen );
+				this.trigger( frozen, 'update', frozen, _.live );
 		}
 
 		// Refresh the parent nodes directly
@@ -344,7 +344,6 @@ var Frozen = {
 
 	unpivot: function( node ){
 		Utils.nextTick( function(){
-			console.log('unpivoting');
 			node.__.pivot = 0;
 		});
 	},
@@ -479,7 +478,7 @@ var Frozen = {
 		;
 
 		if( _.listener )
-			this.trigger( newChild, 'update', newChild );
+			this.trigger( newChild, 'update', newChild, _.live );
 
 		if( !_.parents.length ){
 			if( _.listener ){
@@ -544,9 +543,9 @@ var Frozen = {
 		;
 
 		if( now ){
-			if( ticking ){
+			if( ticking || param ){
 				listener.ticking = 0;
-				listener.trigger( eventName, ticking );
+				listener.trigger( eventName, ticking || param );
 			}
 			return;
 		}
@@ -554,9 +553,11 @@ var Frozen = {
 		listener.ticking = param;
 		if( !ticking ){
 			Utils.nextTick( function(){
-				var updated = listener.ticking;
-				listener.ticking = 0;
-				listener.trigger( eventName, updated );
+				if( listener.ticking ){
+					var updated = listener.ticking;
+					listener.ticking = 0;
+					listener.trigger( eventName, updated );
+				}
 			});
 		}
 	},

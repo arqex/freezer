@@ -1,4 +1,7 @@
 # Freezer Changelog
+###v0.7.1
+* Fixed `now` method triggering `update` event twice.
+* Fixed live mode not triggering events in intermediate nodes.
 
 ###v0.7.0
 * Added `pivot`` method.

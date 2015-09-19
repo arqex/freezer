@@ -80,6 +80,25 @@ describe("Freezer events test", function(){
 		freezer.get().b.set( {c: 3} );
 	});
 
+	it( "Live mode should trigger in all parents synchronously.", function(){
+		var freezer = new Freezer( example, { live: true } ),
+			data = freezer.get(),
+			triggered = 0,
+			handler = function(){
+				triggered++;
+			}
+		;
+
+		freezer.on('update', handler);
+		data.getListener().on('update', handler);
+		data.c.getListener().on('update', handler);
+		data.c[2].getListener().on('update', handler);
+
+		data.c[2].set( {w:4} );
+
+		assert.equal( triggered, 4 );
+	});
+
 	it( "Listen to root updates", function( done ){
 
 		freezer.on( 'update', function(){
@@ -325,5 +344,15 @@ describe("Freezer events test", function(){
 		data.c[2].set( {w:4} ).now();
 
 		assert.equal( triggered, 4 );
+	});
+
+	it( "Now must trigger just one event", function( done ){
+		freezer.on('update', function( update ){
+			// If we get here and call done twice
+			// an error will be thrown
+			assert.equal( update.a, 10 );
+			done();
+		});
+		data.set({a: 10}).now();
 	});
 });

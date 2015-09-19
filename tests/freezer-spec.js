@@ -177,7 +177,6 @@ describe("Freezer test", function(){
 		var handler = function handler( newData ){
 			freezer.off('update', handler);
 			var newPivot = newData.b.set({u: 20});
-			console.log( newPivot );
 			assert.equal( newPivot.u, 20 );
 			assert.equal( newData.__.pivot, 0 );
 			done();

@@ -78,8 +78,10 @@ var Freezer = function( initialValue, options ) {
 		if( !updating ){
 			updating = true;
 			Utils.nextTick( function(){
-				updating = false;
-				me.trigger( 'update', frozen );
+				if( updating ){
+					updating = false;
+					me.trigger( 'update', frozen );
+				}
 			});
 		}
 	});

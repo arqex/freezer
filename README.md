@@ -48,7 +48,7 @@ bower install freezer-js
 It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~20KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~9KB).
 
 ## Example of use
-You can play with [this example in JSBin](http://jsbin.com/suvoxivizi/2/edit?js,console).
+You can play with [this example in JSBin](http://jsbin.com/hinazasuto/edit?js,console).
 ```js
 // Browserify/Node style of loading
 var Freezer = require('freezer-js');
