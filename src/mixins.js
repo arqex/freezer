@@ -30,7 +30,7 @@ var commonMethods = {
 			update = this.__.trans
 		;
 
-		if( typeof value != 'undefined' ){
+		if( typeof attr == 'string' ){
 			attrs = {};
 			attrs[ attr ] = value;
 		}

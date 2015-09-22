@@ -46,6 +46,18 @@ describe("Freezer test", function(){
 		assert.notEqual( updated, data );
 	});
 
+
+	it( "Update a value to undefined", function(){
+		data.set('a',undefined);
+
+		var updated = freezer.getData();
+
+		//using other
+		assert.equal( updated, updated.b.__.parents[0]);
+		assert.deepEqual( updated.a, undefined );
+		assert.notEqual( updated, data );
+	});
+
 	it( "Update a value doesnt modify other elements", function(){
 		data.set({a: 2});
 
