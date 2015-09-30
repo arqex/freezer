@@ -62,6 +62,25 @@ describe("Freezer events test", function(){
 		freezer.get().b.set( {c: 3} );
 	});
 
+	it( "Events must be asynchronous for all the nodes", function(){
+		var triggered = '0',
+			handler = function( key ){
+				return function( update ){
+					triggered += key;
+				};
+			}
+		;
+
+		data.getListener().on('update', handler(2));
+		data.c.getListener().on('update', handler(3));
+		data.c[2].getListener().on('update', handler(4));
+		freezer.on('update', handler(1));
+
+		data.c[2].set( {w:4} );
+
+		assert.equal( triggered, '0' );
+	});
+
 	it( "Listen to multiple node updates, live mode", function( done ){
 		var freezer = new Freezer( example, { live: true } ),
 			listener = freezer.get().b.getListener(),
@@ -83,20 +102,22 @@ describe("Freezer events test", function(){
 	it( "Live mode should trigger in all parents synchronously.", function(){
 		var freezer = new Freezer( example, { live: true } ),
 			data = freezer.get(),
-			triggered = 0,
-			handler = function(){
-				triggered++;
+			triggered = '',
+			handler = function( key ){
+				return function( update ){
+					triggered += key;
+				};
 			}
 		;
 
-		freezer.on('update', handler);
-		data.getListener().on('update', handler);
-		data.c.getListener().on('update', handler);
-		data.c[2].getListener().on('update', handler);
+		freezer.on('update', handler(1));
+		data.getListener().on('update', handler(2));
+		data.c.getListener().on('update', handler(3));
+		data.c[2].getListener().on('update', handler(4));
 
 		data.c[2].set( {w:4} );
 
-		assert.equal( triggered, 4 );
+		assert.equal( triggered, '4321' );
 	});
 
 	it( "Listen to root updates", function( done ){
@@ -330,20 +351,22 @@ describe("Freezer events test", function(){
 	});
 
 	it( "Now must be synchronous for all the nodes", function(){
-		var triggered = 0,
-			handler = function(){
-				triggered++;
+		var triggered = '',
+			handler = function( key ){
+				return function( update ){
+					triggered += key;
+				};
 			}
 		;
 
-		freezer.on('update', handler);
-		data.getListener().on('update', handler);
-		data.c.getListener().on('update', handler);
-		data.c[2].getListener().on('update', handler);
+		data.getListener().on('update', handler(2));
+		data.c.getListener().on('update', handler(3));
+		data.c[2].getListener().on('update', handler(4));
+		freezer.on('update', handler(1));
 
 		data.c[2].set( {w:4} ).now();
 
-		assert.equal( triggered, 4 );
+		assert.equal( triggered, '4321' );
 	});
 
 	it( "Now must trigger just one event", function( done ){

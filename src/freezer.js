@@ -17,18 +17,20 @@ var Freezer = function( initialValue, options ) {
 	var frozen;
 
 	var notify = function notify( eventName, node, options ){
+		var _ = node.__;
+
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
 		if( eventName == 'now' ){
-			if( node.__.listener ){
-				if( !node.__.parents.length )
-					node.__.listener.trigger('immediate', 'now');
-
+			if( _.listener ){
 				Frozen.trigger( node, 'update', 0, true );
+
+				if( !_.parents.length )
+					_.listener.trigger('immediate', 'now');
 			}
-			for (var i = 0; i < node.__.parents.length; i++) {
-				notify('now', node.__.parents[i]);
+			for (var i = 0; i < _.parents.length; i++) {
+				notify('now', _.parents[i]);
 			}
 			return;
 		}

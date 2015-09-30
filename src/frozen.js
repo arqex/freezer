@@ -493,7 +493,6 @@ var Frozen = {
 				if( i == 0 )
 					this.refresh( _.parents[i], oldChild, newChild, false );
 				else{
-
 					this.markDirty( _.parents[i], [oldChild, newChild] );
 				}
 			}
