@@ -1,4 +1,11 @@
 # Freezer Changelog
+###v0.8.0
+* `now` returns the current node, like any other updater method.
+* Fixed nodes losing the live mode on update. Thanks to @zenfe.
+* Fixed nodes triggering event in the wrong order when pivot. Thanks to @zenfe.
+* Tests passing now in Node 4. Thanks @kuraga.
+* Adds setting properties to undefined. Thanks to @rsamec. 
+
 ###v0.7.1
 * Fixed `now` method triggering `update` event twice.
 * Fixed live mode not triggering events in intermediate nodes.

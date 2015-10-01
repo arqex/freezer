@@ -1,4 +1,4 @@
-/* freezer-js v0.7.1 (19-9-2015)
+/* freezer-js v0.8.0 (1-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -251,7 +251,7 @@ var commonMethods = {
 			update = this.__.trans
 		;
 
-		if( typeof value != 'undefined' ){
+		if( typeof attr == 'string' ){
 			attrs = {};
 			attrs[ attr ] = value;
 		}
@@ -838,7 +838,8 @@ var Frozen = {
 			trans: _.trans,
 			dirty: false,
 			freezeFn: _.freezeFn,
-			pivot: _.pivot
+			pivot: _.pivot,
+			live: _.live
 		}});
 
 		if( _.pivot )
@@ -868,7 +869,6 @@ var Frozen = {
 				if( i == 0 )
 					this.refresh( _.parents[i], oldChild, newChild, false );
 				else{
-
 					this.markDirty( _.parents[i], [oldChild, newChild] );
 				}
 			}
@@ -982,30 +982,61 @@ var Freezer = function( initialValue, options ) {
 
 	// Immutable data
 	var frozen;
+	var pivotTriggers = [], pivotTicking = 0;
+	var triggerNow = function( node ){
+		var _ = node.__,
+			i
+		;
+		if( _.listener ){
+			Frozen.trigger( node, 'update', 0, true );
 
+			if( !_.parents.length )
+				_.listener.trigger('immediate', 'now');
+		}
+
+		for (i = 0; i < _.parents.length; i++) {
+			notify('now', _.parents[i]);
+		}
+	};
+	var addToPivotTriggers = function( node ){
+		pivotTriggers.push( node );
+		if( !pivotTicking ){
+			pivotTicking = 1;
+			Utils.nextTick( function(){
+				pivotTriggers = [];
+				pivotTicking = 0;
+			});
+		}
+	}
 	var notify = function notify( eventName, node, options ){
+		var _ = node.__,
+			nowNode
+		;
+
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
 		if( eventName == 'now' ){
-			if( node.__.listener ){
-				if( !node.__.parents.length )
-					node.__.listener.trigger('immediate', 'now');
-
-				Frozen.trigger( node, 'update', 0, true );
+			if( pivotTriggers.length ){
+				while( pivotTriggers.length ){
+					nowNode = pivotTriggers.shift();
+					triggerNow( nowNode );
+				}
 			}
-			for (var i = 0; i < node.__.parents.length; i++) {
-				notify('now', node.__.parents[i]);
+			else {
+				triggerNow( node );
 			}
-			return;
+			return node;
 		}
 
 		var update = Frozen.update( eventName, node, options );
 
 		if( eventName != 'pivot' ){
 			var pivot = Utils.findPivot( update );
-			if( pivot )
+			if( pivot ) {
+				addToPivotTriggers( update );
 	  			return pivot;
+			}
 		}
 
 		return update;
