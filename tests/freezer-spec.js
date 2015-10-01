@@ -46,6 +46,21 @@ describe("Freezer test", function(){
 		assert.notEqual( updated, data );
 	});
 
+
+	it( "Update a value to undefined", function(){
+		data.set('a',undefined);
+
+		var updated = freezer.getData();
+
+		//note that assert is using other property (b) to access parent, because a is set to undefined
+		assert.equal( updated, updated.b.__.parents[0]);
+
+		//test affected property as usual
+		assert.deepEqual( updated.a, undefined );
+
+		assert.notEqual( updated, data );
+	});
+
 	it( "Update a value doesnt modify other elements", function(){
 		data.set({a: 2});
 
