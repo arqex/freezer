@@ -463,7 +463,8 @@ var Frozen = {
 			trans: _.trans,
 			dirty: false,
 			freezeFn: _.freezeFn,
-			pivot: _.pivot
+			pivot: _.pivot,
+			live: _.live
 		}});
 
 		if( _.pivot )

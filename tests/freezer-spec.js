@@ -188,4 +188,51 @@ describe("Freezer test", function(){
 		;
 		assert.equal( updated.b.u, 10 );
 	});
+
+	it( "Pivot should not change event order", function(){
+		var triggered = '',
+			handler = function( key ){
+				return function( update ){
+					triggered += key;
+				};
+			}
+		;
+
+		data.getListener().on('update', handler(2));
+		data.c.getListener().on('update', handler(3));
+		data.c[2].getListener().on('update', handler(4));
+		freezer.on('update', handler(1));
+
+		data = data.pivot().c[2].set( {w:4} ).now();
+		data = data.pivot().c[2].set( {w:5} ).now();
+		data = data.pivot().c[2].set( {w:6} ).now();
+
+		assert.equal( triggered, '432143214321' );
+	});
+
+	it( "Pivot should not change event order in live mode", function(){
+		var freezer = new Freezer( example, { live: true } ),
+			data = freezer.get()
+		;
+
+		var triggered = '',
+			handler = function( key ){
+				return function( update ){
+					triggered += key;
+				};
+			}
+		;
+
+		data.getListener().on('update', handler(2));
+		data.c.getListener().on('update', handler(3));
+		data.c[2].getListener().on('update', handler(4));
+		freezer.on('update', handler(1));
+
+		data = data.pivot().c[2].set( {w:4} );
+		data = data.pivot().c[2].set( {w:5} );
+		data = data.pivot().c[2].set( {w:6} );
+
+		assert.equal( triggered, '432143214321' );
+	});
+
 });

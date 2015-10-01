@@ -15,32 +15,61 @@ var Freezer = function( initialValue, options ) {
 
 	// Immutable data
 	var frozen;
+	var pivotTriggers = [], pivotTicking = 0;
+	var triggerNow = function( node ){
+		var _ = node.__,
+			i
+		;
+		if( _.listener ){
+			Frozen.trigger( node, 'update', 0, true );
 
+			if( !_.parents.length )
+				_.listener.trigger('immediate', 'now');
+		}
+
+		for (i = 0; i < _.parents.length; i++) {
+			notify('now', _.parents[i]);
+		}
+	};
+	var addToPivotTriggers = function( node ){
+		pivotTriggers.push( node );
+		if( !pivotTicking ){
+			pivotTicking = 1;
+			Utils.nextTick( function(){
+				pivotTriggers = [];
+				pivotTicking = 0;
+			});
+		}
+	}
 	var notify = function notify( eventName, node, options ){
-		var _ = node.__;
+		var _ = node.__,
+			nowNode
+		;
 
 		if( eventName == 'listener' )
 			return Frozen.createListener( node );
 
 		if( eventName == 'now' ){
-			if( _.listener ){
-				Frozen.trigger( node, 'update', 0, true );
-
-				if( !_.parents.length )
-					_.listener.trigger('immediate', 'now');
+			if( pivotTriggers.length ){
+				while( pivotTriggers.length ){
+					nowNode = pivotTriggers.shift();
+					triggerNow( nowNode );
+				}
 			}
-			for (var i = 0; i < _.parents.length; i++) {
-				notify('now', _.parents[i]);
+			else {
+				triggerNow( node );
 			}
-			return;
+			return node;
 		}
 
 		var update = Frozen.update( eventName, node, options );
 
 		if( eventName != 'pivot' ){
 			var pivot = Utils.findPivot( update );
-			if( pivot )
+			if( pivot ) {
+				addToPivotTriggers( update );
 	  			return pivot;
+			}
 		}
 
 		return update;
