@@ -27,6 +27,7 @@ Do you want to know more?
 * [Updating the data](#update-methods)
 * [Events](#events-1)
 * [Batch updates](#batch-updates)
+* [Usage with React](#usage-with-react)
 * [Changelog](#changelog)
 * [Ask any question in the chat](https://gitter.im/arqex/freezer)
 
@@ -35,16 +36,12 @@ Do you want to know more?
 * Todo MVC using Freezer. [Code](https://github.com/arqex/freezer-todomvc) & [Demo](http://freezer-todos.divshot.io).
 * [How to use React and Freezer together](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it .
+* [The flux comparison project](https://github.com/voronianski/flux-comparison).
 
 ## Installation
 Freezer is available as a npm package.
 ```
 npm install freezer-js
-```
-
-Also as a bower package
-```
-bower install freezer-js
 ```
 
 It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~20KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~9KB).
@@ -436,6 +433,47 @@ freezer.get().list; // [1000, 1, 2, ..., 999]
 Transactions are designed to always commit the changes, so if you start a transaction but you forget to call `run`, it will be called automatically on the next tick.
 
 It is possible to update children nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confussion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve its performance much because of having a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior. 
+
+## Usage with React
+Creating data driven React applications using Freezer is really simple. Just wrap your top React component in order to pass the app state as a prop. Then, re-render on any state change.
+
+```js
+var AppContainer = React.createClass({
+    render: function(){
+        var state = freezer.get();
+        return <App state={ state } />;
+    },
+    componentDidMount: function(){
+        var me = this;
+        freezer.on('update', function(){ me.forceUpdate() });
+    }
+});
+```
+
+Freezer can be used along with any Flux library, but it is also possible to use it in a Flux alike way without any framework.
+
+Instead of calling actions we can trigger custom events, thanks to the open event system built in Freezer. Those events accept any number of parameters.
+
+```js
+// State is the Freezer object
+State.trigger('products:addToCart', product, cart);
+```
+
+A dispatcher is not needed either, you can listen to those events directly in the Freezer object.
+
+```js
+State.on('products:addToCart', function (product, cart) {
+    // Update the app state here...
+});
+```
+
+Listener methods that update the state are called **reactions**, ( we are building reactive application, don't we?). It is nice to organize them in files by their domain, like if they were flux stores, but with the difference that all the domains store the data in the same Freezer object.
+
+If you need to coordinate state updates, you can trigger new events when a reaction finishes, or listen to specific nodes, no need of `waitFor`.
+
+This is all what it takes to understand Flux apps with Freezer. No complex concepts like observers, reducers, payloads or action creators. Just events and almost no boilerplate code.
+
+You can check this approach working in the [TodoMVC sample app](https://github.com/arqex/freezer-todomvc), or in the [flux comparison project](https://github.com/voronianski/flux-comparison).
 
 ## Changelog
 [Here](https://github.com/arqex/freezer/blob/master/CHANGELOG.md)
