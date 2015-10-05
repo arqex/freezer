@@ -17,7 +17,7 @@ var emitterProto = {
 	},
 
 	once: function( eventName, listener ){
-		this.on( eventName, listener, true );
+		return this.on( eventName, listener, true );
 	},
 
 	off: function( eventName, listener ){
