@@ -1,4 +1,7 @@
 # Freezer Changelog
+###v0.8.1
+* `once` now returns the listener/freezer object.
+
 ###v0.8.0
 * `now` returns the current node, like any other updater method.
 * Fixed nodes losing the live mode on update. Thanks to @zenfe.

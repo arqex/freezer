@@ -1,4 +1,4 @@
-/* freezer-js v0.8.0 (1-10-2015)
+/* freezer-js v0.8.1 (6-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -164,7 +164,7 @@ var emitterProto = {
 	},
 
 	once: function( eventName, listener ){
-		this.on( eventName, listener, true );
+		return this.on( eventName, listener, true );
 	},
 
 	off: function( eventName, listener ){
