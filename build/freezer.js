@@ -1,4 +1,4 @@
-/* freezer-js v0.8.1 (15-10-2015)
+/* freezer-js v0.8.2 (15-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
