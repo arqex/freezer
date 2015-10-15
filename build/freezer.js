@@ -1,4 +1,4 @@
-/* freezer-js v0.8.1 (6-10-2015)
+/* freezer-js v0.8.1 (15-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -248,10 +248,11 @@ var createNE = function( attrs ){
 var commonMethods = {
 	set: function( attr, value ){
 		var attrs = attr,
-			update = this.__.trans
+			update = this.__.trans,
+			attrType = typeof attr
 		;
 
-		if( typeof attr == 'string' ){
+		if( attrType == 'string' || attrType == 'number' ){
 			attrs = {};
 			attrs[ attr ] = value;
 		}

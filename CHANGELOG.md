@@ -1,4 +1,7 @@
 # Freezer Changelog
+###v0.8.2
+* Fixed `set` not accepting numerical keys.
+
 ###v0.8.1
 * `once` now returns the listener/freezer object.
 

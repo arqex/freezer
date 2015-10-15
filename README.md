@@ -6,7 +6,7 @@ A tree data structure that is always updated from the root, even if the modifica
 [![npm version](https://badge.fury.io/js/freezer-js.svg)](http://badge.fury.io/js/freezer-js)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/arqex/freezer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Freezer is made with React.js in mind and uses real immutable structures, it is the perfect store for your Flux implementation. 
+Are you looking for a immutable.js alternative? Freezer is made with React.js in mind and uses real immutable structures, it is the perfect store for your Flux implementation. 
 
 What makes Freezer special is:
 
@@ -467,7 +467,7 @@ State.on('products:addToCart', function (product, cart) {
 });
 ```
 
-Listener methods that update the state are called **reactions**, ( we are building reactive application, don't we?). It is nice to organize them in files by their domain, like if they were flux stores, but with the difference that all the domains store the data in the same Freezer object.
+Listener methods that update the state are called **reactions**, ( we are building reactive applications, are't we?). It is nice to organize them in files by their domain, like if they were flux stores, but with the difference that all the domains store the data in the same Freezer object.
 
 If you need to coordinate state updates, you can trigger new events when a reaction finishes, or listen to specific nodes, no need of `waitFor`.
 

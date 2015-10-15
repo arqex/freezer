@@ -46,9 +46,24 @@ describe("Freezer test", function(){
 		assert.notEqual( updated, data );
 	});
 
+	it( "Update a value with a string key", function(){
+		data.c.set('0', 3);
+
+		var updated = freezer.getData();
+
+		assert.equal( updated.c[0], 3);
+	});
+
+	it( "Update a value with a numeric key", function(){
+		data.c.set(0, 3);
+
+		var updated = freezer.getData();
+
+		assert.equal( updated.c[0], 3);
+	});
 
 	it( "Update a value to undefined", function(){
-		data.set('a',undefined);
+		data.set('a', undefined);
 
 		var updated = freezer.getData();
 
