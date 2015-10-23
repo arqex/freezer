@@ -228,7 +228,7 @@ var updatedObj = freezer.get().obj.set('a', 'hello');
 console.log( updatedObj ); // {a:'hello', b:'adios'}
 
 var updatedArr = freezer.get().arr.unshift( 0 );
-console.log( udpatedArr ); // [0,1,2]
+console.log( updatedArr ); // [0,1,2]
 
 // {obj: {a:'hello', b:'adios'}, arr: [0,1,2]}
 console.log( freezer.get() ); 
