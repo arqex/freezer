@@ -374,7 +374,7 @@ Freezer objects emit `update` events whenever their data changes. It is also pos
 #### getListener()
 Returns a listener that emits an `update` event when the node is updated. The listener implements the [listener API](#listener-api).
 ```js
-var freezer = new Cursor({ arr: [2] }),
+var freezer = new Freezer({ arr: [2] }),
     state = freezer.get(),
     listener = state.arr.getListener()
 ;
