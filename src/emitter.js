@@ -2,6 +2,12 @@
 
 var Utils = require( './utils' );
 
+var BEFOREALL = 'beforeAll',
+	AFTERALL = 'afterAll'
+;
+
+var specialEvents = ['immediate', BEFOREALL, AFTERALL];
+
 //#build
 
 // The prototype methods are stored in a different object
@@ -45,15 +51,18 @@ var emitterProto = {
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
+			special = specialEvents.indexOf( eventName ) != -1,
 			i, listener
 		;
+
+		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
 
 		// Call listeners
 		for (i = 0; i < listeners.length; i++) {
 			listener = listeners[i];
 
 			if( listener.callback )
-				listener.callback.apply( null, args );
+				listener.callback.apply( this, args );
 			else {
 				// If there is not a callback, remove!
 				listener.once = true;
@@ -67,6 +76,8 @@ var emitterProto = {
 		for( i = onceListeners.length - 1; i >= 0; i-- ){
 			listeners.splice( onceListeners[i], 1 );
 		}
+
+		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
 
 		return this;
 	}

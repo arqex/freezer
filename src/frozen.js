@@ -61,27 +61,25 @@ var Frozen = {
 	reset: function( node, value ){
 		var me = this,
 			_ = node.__,
-			frozen
+			frozen = value
 		;
 
-		if( value && value.__ ){
-			frozen = value;
-			frozen.__.listener = value.__.listener;
-			frozen.__.parents = [];
+		if( !frozen.__ ){
+			frozen = this.freeze( value, _.notify, _.freezeFn, _.live );
+		}
 
-			// Set back the parent on the children
-			// that have been updated
-			this.fixChildren( frozen, node );
-			Utils.each( frozen, function( child ){
-				if( child && child.__ ){
-					me.removeParent( node );
-					me.addParent( child, frozen );
-				}
-			});
-		}
-		else {
-			frozen = this.freeze( node, _.notify, _.freezeFn, _.live );
-		}
+		frozen.__.listener = _.listener;
+		frozen.__.parents = _.parents;
+
+		// Set back the parent on the children
+		// that have been updated
+		this.fixChildren( frozen, node );
+		Utils.each( frozen, function( child ){
+			if( child && child.__ ){
+				me.removeParent( node );
+				me.addParent( child, frozen );
+			}
+		});
 
 		return frozen;
 	},

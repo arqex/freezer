@@ -388,7 +388,7 @@ state.arr.push( 3 ); //logs 'Updated!' [2,3]
 ```
 
 ## Listener API
-Freezer instances and listeners implement this API that is influenced by the way Backbone handle events. The only event that Freezer emits is `update`, and it is emitted on every node update.
+Freezer instances and listeners implement this API that is influenced by the way Backbone handle events. The main event that Freezer emits is `update`, and it is emitted on every node update.
 
 #### on( eventName, callback )
 Register a function to be called when an event occurs.
@@ -398,6 +398,19 @@ Register a function to be called once when an event occurs. After being called t
 Can unregister all callbacks from a listener if the `eventName` parameter is omitted, or all the callbacks for a `eventName` if the `callback` parameter is omitted.
 #### trigger( eventName [, param, param, ...] )
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
+
+### Event hooks
+Freezer objects and nodes also emits `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the triggered event in the arguments.
+```js
+var Store = new Freezer({a: 1});
+Store.on('beforeAll', function( eventName, arg1, arg2 ){
+    console.log( event, arg1, arg2 );
+});
+
+Store.get().set({a: 2}); // Will log 'update', {a:2}, undefined
+Store.trigger('add', 4, 5); // Will log 'add', 4, 5
+```
+This is a nice way of binding reactions to more than one type of event.
 
 ## Batch updates
 At some point you will find yourself wanting to apply multiple changes on some node at a time. On every change the full tree is re-generated, but probably the only tree needed is the final result of all those changes. 

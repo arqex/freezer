@@ -378,4 +378,75 @@ describe("Freezer events test", function(){
 		});
 		data.set({a: 10}).now();
 	});
+
+	it("beforeAll afterAll", function( done ){
+		var out = '';
+		freezer
+			.on('someEvent', function(){
+				out += ' event ';
+			})
+			.on('beforeAll', function( eventName, arg1, arg2 ){
+				out = eventName + arg1 + arg2;
+			})
+			.on('afterAll', function( eventName, arg1, arg2 ){
+				out += eventName + arg1 + arg2;
+			})
+		;
+
+		freezer.trigger('someEvent', 1, 2);
+
+		setTimeout( function(){
+			assert.equal( out, 'someEvent12 event someEvent12' );
+			done();
+		}, 150 );
+	});
+
+	it("beforeAll afterAll are triggered at update", function( done ){
+		var out = '';
+		freezer
+			.on('update', function(){
+				out += ' event ';
+			})
+			.on('beforeAll', function( eventName, update ){
+				assert.equal( update.a, 10 );
+				out = eventName;
+			})
+			.on('afterAll', function( eventName, update ){
+				assert.equal( update.a, 10 );
+				out += eventName;
+			})
+		;
+
+		data.set({a:10});
+
+		setTimeout( function(){
+			assert.equal( out, 'update event update' );
+			done();
+		}, 150 );
+	});
+
+
+	it("beforeAll afterAll aren't triggered at immediate", function( done ){
+		var out = '';
+		freezer
+			.on('immediate', function(){
+				out += ' event ';
+			})
+			.on('beforeAll', function( eventName, update ){
+				assert.equal( update.a, 10 );
+				out = eventName;
+			})
+			.on('afterAll', function( eventName, update ){
+				assert.equal( update.a, 10 );
+				out += eventName;
+			})
+		;
+
+		data.set({a:10});
+
+		setTimeout( function(){
+			assert.equal( out, 'updateupdate' );
+			done();
+		}, 150 );
+	});
 });

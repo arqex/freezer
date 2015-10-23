@@ -1,4 +1,4 @@
-/* freezer-js v0.8.2 (15-10-2015)
+/* freezer-js v0.9.0 (23-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -192,15 +192,18 @@ var emitterProto = {
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
+			special = specialEvents.indexOf( eventName ) != -1,
 			i, listener
 		;
+
+		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
 
 		// Call listeners
 		for (i = 0; i < listeners.length; i++) {
 			listener = listeners[i];
 
 			if( listener.callback )
-				listener.callback.apply( null, args );
+				listener.callback.apply( this, args );
 			else {
 				// If there is not a callback, remove!
 				listener.once = true;
@@ -214,6 +217,8 @@ var emitterProto = {
 		for( i = onceListeners.length - 1; i >= 0; i-- ){
 			listeners.splice( onceListeners[i], 1 );
 		}
+
+		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
 
 		return this;
 	}
@@ -437,27 +442,25 @@ var Frozen = {
 	reset: function( node, value ){
 		var me = this,
 			_ = node.__,
-			frozen
+			frozen = value
 		;
 
-		if( value && value.__ ){
-			frozen = value;
-			frozen.__.listener = value.__.listener;
-			frozen.__.parents = [];
+		if( !frozen.__ ){
+			frozen = this.freeze( value, _.notify, _.freezeFn, _.live );
+		}
 
-			// Set back the parent on the children
-			// that have been updated
-			this.fixChildren( frozen, node );
-			Utils.each( frozen, function( child ){
-				if( child && child.__ ){
-					me.removeParent( node );
-					me.addParent( child, frozen );
-				}
-			});
-		}
-		else {
-			frozen = this.freeze( node, _.notify, _.freezeFn, _.live );
-		}
+		frozen.__.listener = _.listener;
+		frozen.__.parents = _.parents;
+
+		// Set back the parent on the children
+		// that have been updated
+		this.fixChildren( frozen, node );
+		Utils.each( frozen, function( child ){
+			if( child && child.__ ){
+				me.removeParent( node );
+				me.addParent( child, frozen );
+			}
+		});
 
 		return frozen;
 	},

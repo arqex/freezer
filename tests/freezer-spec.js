@@ -21,7 +21,6 @@ describe("Freezer test", function(){
 	});
 
 	it( "Create a freezer object", function(){
-
 		assert.equal( data.a, example.a );
 		assert.equal( data.b.z, example.b.z );
 		assert.equal( data.b.x[0], example.b.x[0] );
@@ -34,6 +33,54 @@ describe("Freezer test", function(){
 		assert.equal( data.a.__, undefined );
 		assert.equal( data.b.z.__, undefined );
 		assert.equal( data.c[1].__, undefined );
+	});
+
+	it( "Reset with a previous state", function( done ){
+		var counter = 0;
+		data.set({b: 5});
+		freezer.on('update', function(){
+			if( !counter ){
+				freezer.set( data );
+				counter++;
+			}
+			else if( counter == 1 ){
+				assert.equal( counter, 1 );
+				assert.equal( freezer.get(), data );
+
+				freezer.get().b.set({z:10});
+				counter++;
+			}
+			else {
+				assert.equal( freezer.get().b.z, 10 );
+				done();
+			}
+		});
+
+		freezer.get().set({c: 6});
+	});
+
+	it( "Reset with a value", function( done ){
+		var counter = 0;
+		data.set({b: 5});
+		freezer.on('update', function(){
+			if( !counter ){
+				freezer.set( {z:{a:1}} );
+				counter++;
+			}
+			else if( counter == 1 ){
+				assert.equal( freezer.get().z.a, 1 );
+				assert.equal( freezer.get().a, undefined );
+				freezer.get().z.set({b:2});
+				counter++;
+			}
+			else {
+				assert.equal( freezer.get().z.a, 1 );
+				assert.equal( freezer.get().z.b, 2 );
+				done();
+			}
+		});
+
+		freezer.get().set({c: 6});
 	});
 
 	it( "Update a value", function(){

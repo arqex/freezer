@@ -1,4 +1,10 @@
 # Freezer Changelog
+###v0.9.0
+* Added `beforeAll` and `afterAll` events.
+* `this` in event listeners now point to the current freezer object.
+* Fixed `Freezer.prototype.set` not working with plain objects.
+* Fixed some typos in README.
+
 ###v0.8.2
 * Fixed `set` not accepting numerical keys.
 
