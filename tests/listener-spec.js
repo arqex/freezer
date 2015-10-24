@@ -449,4 +449,27 @@ describe("Freezer events test", function(){
 			done();
 		}, 150 );
 	});
+
+	it("All the parents of a duplicated node should trigger update", function(done){
+		data.b.set({u: data.c[2]});
+
+		var bUpdated = false,
+			cUpdated = false
+		;
+
+		var l1 = freezer.get().b.getListener().on('update',  function(){
+			bUpdated = true;
+		});
+		var l2 = freezer.get().c.getListener().on('update',  function(){
+			cUpdated = true;
+		});
+
+		freezer.get().b.u.set({w: 5});
+
+		setTimeout(function(){
+			assert(bUpdated);
+			assert(cUpdated);
+			done();
+		}, 250);
+	});
 });

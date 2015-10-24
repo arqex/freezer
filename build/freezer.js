@@ -1,4 +1,4 @@
-/* freezer-js v0.9.0 (24-10-2015)
+/* freezer-js v0.9.2 (24-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -561,8 +561,7 @@ var Frozen = {
 
 			// Since the parents will be refreshed directly,
 			// Trigger the listener here
-			if( frozen.__.listener )
-				this.trigger( frozen, 'update', frozen, _.live );
+			this.trigger( frozen, 'update', frozen, _.live );
 		}
 
 		// Refresh the parent nodes directly
@@ -795,7 +794,10 @@ var Frozen = {
 		node.__.freezeFn( frozen );
 
 		// If the node was dirty, clean it
-		node.__.dirty = false;
+		if( dirty ){
+			node.__.dirty = false;
+			this.trigger( frozen, 'update', frozen, frozen.__.live );
+		}
 
 		if( returnUpdated )
 			return frozen;
@@ -863,8 +865,7 @@ var Frozen = {
 			i
 		;
 
-		if( _.listener )
-			this.trigger( newChild, 'update', newChild, _.live );
+		this.trigger( newChild, 'update', newChild, _.live );
 
 		if( !_.parents.length ){
 			if( _.listener ){
@@ -897,7 +898,6 @@ var Frozen = {
 			this.refresh( node, dirt[0], dirt[1] );
 
 		for ( i = _.parents.length - 1; i >= 0; i-- ) {
-
 			this.markDirty( _.parents[i], dirt );
 		}
 	},
@@ -923,9 +923,11 @@ var Frozen = {
 	},
 
 	trigger: function( node, eventName, param, now ){
-		var listener = node.__.listener,
-			ticking = listener.ticking
-		;
+		var listener = node.__.listener;
+		if( !listener )
+			return;
+
+		var ticking = listener.ticking;
 
 		if( now ){
 			if( ticking || param ){
