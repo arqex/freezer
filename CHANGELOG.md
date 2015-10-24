@@ -1,4 +1,7 @@
 # Freezer Changelog
+###v0.9.1
+* Fixed specialEvents problem in build
+
 ###v0.9.0
 * Added `beforeAll` and `afterAll` events.
 * `this` in event listeners now point to the current freezer object.

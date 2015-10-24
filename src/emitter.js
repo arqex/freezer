@@ -2,13 +2,15 @@
 
 var Utils = require( './utils' );
 
+
+
+//#build
+
+
 var BEFOREALL = 'beforeAll',
 	AFTERALL = 'afterAll'
 ;
-
 var specialEvents = ['immediate', BEFOREALL, AFTERALL];
-
-//#build
 
 // The prototype methods are stored in a different object
 // and applied as non enumerable properties later

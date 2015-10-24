@@ -1,4 +1,4 @@
-/* freezer-js v0.9.0 (23-10-2015)
+/* freezer-js v0.9.0 (24-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -150,6 +150,12 @@ var Utils = {
   }
 };
 
+
+
+var BEFOREALL = 'beforeAll',
+	AFTERALL = 'afterAll'
+;
+var specialEvents = ['immediate', BEFOREALL, AFTERALL];
 
 // The prototype methods are stored in a different object
 // and applied as non enumerable properties later

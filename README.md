@@ -400,7 +400,7 @@ Can unregister all callbacks from a listener if the `eventName` parameter is omi
 Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
 
 ### Event hooks
-Freezer objects and nodes also emits `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the triggered event in the arguments.
+Freezer objects and nodes also emit `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the triggered event in the arguments.
 ```js
 var Store = new Freezer({a: 1});
 Store.on('beforeAll', function( eventName, arg1, arg2 ){
@@ -410,7 +410,7 @@ Store.on('beforeAll', function( eventName, arg1, arg2 ){
 Store.get().set({a: 2}); // Will log 'update', {a:2}, undefined
 Store.trigger('add', 4, 5); // Will log 'add', 4, 5
 ```
-This is a nice way of binding reactions to more than one type of event.
+This is a nice way of binding [reactions](#usage-with-react) to more than one type of event.
 
 ## Batch updates
 At some point you will find yourself wanting to apply multiple changes on some node at a time. On every change the full tree is re-generated, but probably the only tree needed is the final result of all those changes. 
