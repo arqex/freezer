@@ -37,6 +37,7 @@ Do you want to know more?
 * [How to use React and Freezer together](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it .
 * [The flux comparison project](https://github.com/voronianski/flux-comparison).
+* [Freezer receiving data from websockets in the Flux Challenge.](https://github.com/staltz/flux-challenge/tree/master/submissions/arqex).
 
 ## Installation
 Freezer is available as a npm package.
