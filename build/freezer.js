@@ -1,4 +1,4 @@
-/* freezer-js v0.9.2 (24-10-2015)
+/* freezer-js v0.9.3 (26-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -68,7 +68,7 @@ var Utils = {
       var queue = [],
 			dirty = false,
 			fn,
-			hasPostMessage = !!global.postMessage,
+			hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
 			messageName = 'nexttick',
 			trigger = (function () {
 				return hasPostMessage

@@ -1,7 +1,10 @@
 # Freezer Changelog
+###v0.9.3
+* Using messages for nextTick implementation only in browsers. Needed to make freezer work with react native.
+
 ###v0.9.2
 * Not triggering events in all parents when a node have more than one parent.
-* 
+
 ###v0.9.1
 * Fixed specialEvents problem in build
 

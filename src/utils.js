@@ -55,7 +55,7 @@ var Utils = {
       var queue = [],
 			dirty = false,
 			fn,
-			hasPostMessage = !!global.postMessage && typeof Window != 'undefined' && global instanceof Window,
+			hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
 			messageName = 'nexttick',
 			trigger = (function () {
 				return hasPostMessage
