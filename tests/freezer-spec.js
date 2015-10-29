@@ -172,27 +172,52 @@ describe("Freezer test", function(){
 		assert.equal( updated.d.z, 2 );
 	});
 
-	it( "All duplicated node parents should be updated at the same time", function(){
-		data.c[2].set( {y: data.b.x } );
+	it( "Duplicated nodes should be updated at the same time.", function(){
+		data = data.set({selected: data.b.x});
 
-		var updated = freezer.get();
+		data.selected.push( data.c[2] );
 
+		data = freezer.get();
 
-		assert.equal( updated.b.x.__.parents.length, 2 );
-		assert.equal( updated.b.x.__.parents[1], updated.c[2] );
-		assert.equal( updated.b.x.__.parents[0], updated.b );
+		assert.equal( data.selected, data.b.x );
+		assert.equal( data.selected, data.c[2].__.parents[1] );
 
-		updated.b.x.push( 'C' );
+		data.selected[2].set({u: 4});
 
-		var second = freezer.get();
+		data = freezer.get();
 
-		assert.notEqual( updated, second );
-		assert.notEqual( updated.c, second.c );
-		assert.notEqual( updated.c[2], second.c[2] );
-		assert.notEqual( updated.b, second.b );
-		assert.equal( second.b.x.__.parents.length, 2 );
-		assert.equal( second.b.x.__.parents[1], second.c[2] );
-		assert.equal( second.b.x.__.parents[0], second.b );
+		assert.equal( data.selected, data.b.x );
+	});
+
+	it( "Duplicated nodes should be updated at the same time 2.", function( done ){
+		var freezer = new Freezer({a:[], b:[{z:1}]});
+
+		freezer.get().a.push( freezer.get().b[0] );
+		freezer.get().set( {c: freezer.get().b[0] } );
+
+		var count = 0;
+		freezer.on('update', function(){
+			count++;
+		});
+
+		var cCount = 0;
+		freezer.get().c.getListener().on( 'update', function(){
+			cCount++;
+		});
+
+		var c = freezer.get().c.set({y:2});
+
+		var data = freezer.get();
+		assert.equal( data.a[0], data.b[0] );
+		assert.equal( data.c, data.b[0] );
+		assert.equal( data.c, c );
+		assert.equal( data.b[0], c );
+
+		setTimeout( function(){
+			assert.equal( count, 1 );
+			assert.equal( cCount, 1 );
+			done();
+		}, 200);
 	});
 
 	it( "Restore a previous state", function(){
@@ -311,5 +336,7 @@ describe("Freezer test", function(){
 
 		assert.equal( triggered, '432143214321' );
 	});
+
+
 
 });

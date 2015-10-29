@@ -27,11 +27,10 @@ var createNE = function( attrs ){
 var commonMethods = {
 	set: function( attr, value ){
 		var attrs = attr,
-			update = this.__.trans,
-			attrType = typeof attr
+			update = this.__.trans
 		;
 
-		if( attrType == 'string' || attrType == 'number' ){
+		if( typeof attr != 'object' ){
 			attrs = {};
 			attrs[ attr ] = value;
 		}

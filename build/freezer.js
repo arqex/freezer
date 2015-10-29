@@ -1,4 +1,4 @@
-/* freezer-js v0.9.3 (26-10-2015)
+/* freezer-js v0.9.4 (29-10-2015)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -259,11 +259,10 @@ var createNE = function( attrs ){
 var commonMethods = {
 	set: function( attr, value ){
 		var attrs = attr,
-			update = this.__.trans,
-			attrType = typeof attr
+			update = this.__.trans
 		;
 
-		if( attrType == 'string' || attrType == 'number' ){
+		if( typeof attr != 'object' ){
 			attrs = {};
 			attrs[ attr ] = value;
 		}
@@ -414,7 +413,6 @@ var Frozen = {
 			listener: false,
 			parents: [],
 			notify: notify,
-			dirty: false,
 			freezeFn: freezeFn,
 			live: live || false
 		}});
@@ -570,7 +568,7 @@ var Frozen = {
 		}
 		for (var i = _.parents.length - 1; i >= 0; i--) {
 			if( i == 0 ){
-				this.refresh( _.parents[i], node, frozen, false );
+				this.refresh( _.parents[i], node, frozen );
 			}
 			else{
 
@@ -732,7 +730,7 @@ var Frozen = {
 		});
 	},
 
-	refresh: function( node, oldChild, newChild, returnUpdated ){
+	refresh: function( node, oldChild, newChild ){
 		var me = this,
 			trans = node.__.trans,
 			found = 0
@@ -757,33 +755,15 @@ var Frozen = {
 		}
 
 		var frozen = this.copyMeta( node ),
-			dirty = node.__.dirty,
-			dirt, replacement, __
+			replacement, __
 		;
-
-		if( dirty ){
-			dirt = dirty[0],
-			replacement = dirty[1]
-		}
 
 		Utils.each( node, function( child, key ){
 			if( child === oldChild ){
 				child = newChild;
 			}
-			else if( child === dirt ){
-				child = replacement;
-			}
 
 			if( child && (__ = child.__) ){
-
-				// If there is a trans happening we
-				// don't update a dirty node now. The update
-				// will occur on run.
-				if( !__.trans && __.dirty ){
-					child = me.refresh( child, __.dirty[0], __.dirty[1], true );
-				}
-
-
 				me.removeParent( child, node );
 				me.addParent( child, frozen );
 			}
@@ -792,15 +772,6 @@ var Frozen = {
 		});
 
 		node.__.freezeFn( frozen );
-
-		// If the node was dirty, clean it
-		if( dirty ){
-			node.__.dirty = false;
-			this.trigger( frozen, 'update', frozen, frozen.__.live );
-		}
-
-		if( returnUpdated )
-			return frozen;
 
 		this.refreshParents( node, frozen );
 	},
@@ -848,7 +819,6 @@ var Frozen = {
 			listener: _.listener,
 			parents: _.parents.slice( 0 ),
 			trans: _.trans,
-			dirty: false,
 			freezeFn: _.freezeFn,
 			pivot: _.pivot,
 			live: _.live
@@ -874,31 +844,8 @@ var Frozen = {
 		}
 		else {
 			for (i = _.parents.length - 1; i >= 0; i--) {
-				// If there is more than one parent, mark everyone as dirty
-				// but the last in the iteration, and when the last is refreshed
-				// it will update the dirty nodes.
-				if( i == 0 )
-					this.refresh( _.parents[i], oldChild, newChild, false );
-				else{
-					this.markDirty( _.parents[i], [oldChild, newChild] );
-				}
+				this.refresh( _.parents[i], oldChild, newChild );
 			}
-		}
-	},
-
-	markDirty: function( node, dirt ){
-		var _ = node.__,
-			i
-		;
-		_.dirty = dirt;
-
-		// If there is a transaction happening in the node
-		// update the transaction data immediately
-		if( _.trans )
-			this.refresh( node, dirt[0], dirt[1] );
-
-		for ( i = _.parents.length - 1; i >= 0; i-- ) {
-			this.markDirty( _.parents[i], dirt );
 		}
 	},
 

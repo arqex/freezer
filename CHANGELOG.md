@@ -1,4 +1,8 @@
 # Freezer Changelog
+###v0.9.4
+* Not working internally with dirty nodes anymore.
+* Fixed some nodes getting out of sync when having nested duplicate nodes.
+
 ###v0.9.3
 * Using messages for nextTick implementation only in browsers. Needed to make freezer work with react native.
 
