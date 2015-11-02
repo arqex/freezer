@@ -1,5 +1,7 @@
 # Freezer
 
+[![Join the chat at https://gitter.im/arqex/freezer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/arqex/freezer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A tree data structure that is always updated from the root, even if the modification is triggered by one of the leaves, making easier to think in a reactive way.
 
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/freezer)
