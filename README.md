@@ -131,13 +131,13 @@ freezer.get() === state; // true
 
 ## Why another state holder?
 
-**Freezer** is inspired by other tree cursor libraries, specially [Cortex](https://github.com/mquan/cortex) that try to solve an inconvenient of the Flux architecture:
+**Freezer** is inspired by other tree cursor libraries, specially [Cortex](https://github.com/mquan/cortex) that try to solve an inconvenience of the Flux architecture:
 
-* If you have a store with deep nested data and you need to update some value from a child component that reflect that data, you need to dispatch an action and from the top of the store look for the bit of data again to update it. That may involve a lot of extra code to propagate the change and it is more painful when you think that the component knew already what data to update.
+* If you have a store with deep nested data and you need to update some value from a child component that reflects that data, you need to dispatch an action and from the top of the store look for the bit of data again to update it. That may involve a lot of extra code to propagate the change and it is more painful when you think that the component knew already what data to update.
 
-In the other hand, data changes always flowing in the same direction is what make Flux architecure so easy to reason about. If we let every component to update the data independently we are building a mess again.
+In the other hand, data changes always flowing in the same direction is what make Flux architecure so easy to reason about. If we let every component update the data independently we are building a mess again.
 
-So *Freezer*, instead of letting the child component to update the data directly, gives in every node the tools to require the change. The updates are always made by the root of the store and the data can keep flowing just in one direction.
+So *Freezer*, instead of letting the child component update the data directly, gives every node the tools to require the change. The updates are always made by the root of the store and the data can keep flowing just in one direction.
 
 Imagine that we have the following tree structure as our app state: ![Initial tree](img/initialTree.png)
 
