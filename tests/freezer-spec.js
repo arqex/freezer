@@ -123,6 +123,32 @@ describe("Freezer test", function(){
 		assert.notEqual( updated, data );
 	});
 
+  // MY TESTS
+
+	it( "first (FAILS)", function(){
+		var anotherData = data.set('a', 1);
+		data.set('a', 'another');
+
+		var updated = freezer.getData();
+
+		assert.strictEqual( updated.a, 1 );
+
+		assert.notEqual( updated, data );
+	});
+
+	it( "second (PASSES)", function(){
+		var anotherData = data.set('a', 'cat');
+		data.set('a', 'another');
+
+		var updated = freezer.getData();
+
+		assert.strictEqual( updated.a, 'cat' );
+
+		assert.notEqual( updated, data );
+	});
+
+  // END OF MY TESTS
+
 	it( "Update a value doesnt modify other elements", function(){
 		data.set({a: 2});
 
