@@ -181,13 +181,7 @@ var Frozen = {
 			_.listener.trigger( 'immediate', node, frozen );
 		}
 		for (var i = _.parents.length - 1; i >= 0; i--) {
-			if( i == 0 ){
 				this.refresh( _.parents[i], node, frozen );
-			}
-			else{
-
-				this.markDirty( _.parents[i], [node, frozen] );
-			}
 		}
 		return frozen;
 	},
