@@ -37,7 +37,7 @@ var commonMethods = {
 
 		if( !update ){
 			for( var key in attrs ){
-				update = update || this[ key ] != attrs[ key ];
+				update = update || this[ key ] !== attrs[ key ];
 			}
 
 			// No changes, just return the node
