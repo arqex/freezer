@@ -123,6 +123,38 @@ describe("Freezer test", function(){
 		assert.notEqual( updated, data );
 	});
 
+	it( "Update a value to null", function(){
+		data.set('a', null);
+
+		var updated = freezer.getData();
+
+		assert.deepEqual( updated.a, null );
+
+		assert.notEqual( updated, data );
+	});
+
+	it( "Update an undefined value to null", function(){
+		data = data.set('a', undefined);
+		data.set('a', null);
+
+		var updated = freezer.getData();
+
+		assert.strictEqual( updated.a, null );
+
+		assert.notEqual( updated, data );
+	});
+
+	it( "Update an null value to undefined", function(){
+		data = data.set('a', null);
+		data.set('a', undefined);
+
+		var updated = freezer.getData();
+
+		assert.strictEqual( updated.a, undefined );
+
+		assert.notEqual( updated, data );
+	});
+
 	it( "Update a value doesnt modify other elements", function(){
 		data.set({a: 2});
 
