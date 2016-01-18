@@ -1,4 +1,4 @@
-/* freezer-js v0.9.4 (29-10-2015)
+/* freezer-js v0.9.6 (18-1-2016)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -269,7 +269,7 @@ var commonMethods = {
 
 		if( !update ){
 			for( var key in attrs ){
-				update = update || this[ key ] != attrs[ key ];
+				update = update || this[ key ] !== attrs[ key ];
 			}
 
 			// No changes, just return the node
@@ -567,13 +567,7 @@ var Frozen = {
 			_.listener.trigger( 'immediate', node, frozen );
 		}
 		for (var i = _.parents.length - 1; i >= 0; i--) {
-			if( i == 0 ){
 				this.refresh( _.parents[i], node, frozen );
-			}
-			else{
-
-				this.markDirty( _.parents[i], [node, frozen] );
-			}
 		}
 		return frozen;
 	},

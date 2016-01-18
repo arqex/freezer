@@ -6,7 +6,7 @@
     "arqex"
   ],
   "description": "A tree data structure that is always updated from the root, making easier to think in a reactive way.",
-  "main": "freezer.js",
+  "main": "build/freezer.js",
   "keywords": [
     "react",
     "store",

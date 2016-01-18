@@ -1,4 +1,9 @@
 # Freezer Changelog
+###v0.9.6
+* Fixes orphan markDirty call.
+* Fixes setting null value. Thanks @kuraga
+* Improved readme. Thanks @ivantm
+
 ###v0.9.4
 * Not working internally with dirty nodes anymore.
 * Fixed some nodes getting out of sync when having nested duplicate nodes.
@@ -29,7 +34,7 @@
 * Fixed nodes losing the live mode on update. Thanks to @zenfe.
 * Fixed nodes triggering event in the wrong order when pivot. Thanks to @zenfe.
 * Tests passing now in Node 4. Thanks @kuraga.
-* Adds setting properties to undefined. Thanks to @rsamec. 
+* Adds setting properties to undefined. Thanks to @rsamec.
 
 ###v0.7.1
 * Fixed `now` method triggering `update` event twice.
