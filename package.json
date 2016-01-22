@@ -6,6 +6,7 @@
   "homepage": "https://github.com/arqex/freezer",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha tests",
+    "cover": "node ./node_modules/.bin/istanbul cover --report html --print detail ./node_modules/.bin/_mocha tests",
     "build": "node ./node_modules/gulp/bin/gulp.js"
   },
   "repository": {
@@ -36,6 +37,7 @@
     "gulp": "~3.8.11",
     "benchmark": "~1.0.0",
     "immutable": "~3.6.2",
-    "chai": "~2.0.0"
+    "chai": "~2.0.0",
+    "istanbul": "^0.3.13"
   }
 }
