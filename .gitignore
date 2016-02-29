@@ -27,3 +27,13 @@ bower_components
 
 # Users Environment Variables
 .lock-wscript
+
+#IDEs
+.idea
+
+#Mac OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes

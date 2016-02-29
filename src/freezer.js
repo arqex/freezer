@@ -40,7 +40,7 @@ var Freezer = function( initialValue, options ) {
 				pivotTicking = 0;
 			});
 		}
-	}
+	};
 	var notify = function notify( eventName, node, options ){
 		var _ = node.__,
 			nowNode
@@ -131,7 +131,7 @@ var Freezer = function( initialValue, options ) {
 
 	// The event store
 	this._events = [];
-}
+};
 
 Freezer.prototype = Utils.createNonEnumerable({constructor: Freezer}, Emitter);
 //#build
