@@ -337,6 +337,25 @@ describe("Freezer test", function(){
 		assert.equal( triggered, '432143214321' );
 	});
 
+	it('Pivot should still return pivot when update is not needed', function () {
+		var freezer = new Freezer({
+			a: {
+				b: {
+					test: 1,
+					c: {
+						test: 1
+					}
+				}
+			}
+		});
+		var pivotNode = freezer.get().pivot();
+		pivotNode =
+			pivotNode
+				.set('z', 1)
+				.a.b.set('test', 1)
+				.a.b.c.set('test', 2);
 
+		assert.strictEqual(pivotNode.a.b.c.test, 2);
+	});
 
 });

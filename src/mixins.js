@@ -17,12 +17,12 @@ var createNE = function( attrs ){
 			writable: true,
 			configurable: true,
 			enumerable: false,
-			value: attrs[ key]
+			value: attrs[ key ]
 		}
 	}
 
 	return ne;
-}
+};
 
 var commonMethods = {
 	set: function( attr, value ){
@@ -42,7 +42,7 @@ var commonMethods = {
 
 			// No changes, just return the node
 			if( !update )
-				return this;
+				return Utils.findPivot( this ) || this;
 		}
 
 		return this.__.notify( 'merge', this, attrs );
