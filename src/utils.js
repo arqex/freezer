@@ -50,55 +50,75 @@ var Utils = {
 		}
 	},
 
+	/**
+	 * Creates non-enumerable property descriptors, to be used by Object.create.
+	 * @param  {Object} attrs Properties to create descriptors
+	 * @return {Object}       A hash with the descriptors.
+	 */
+	createNE: function( attrs ){
+		var ne = {};
+
+		for( var key in attrs ){
+			ne[ key ] = {
+				writable: true,
+				configurable: true,
+				enumerable: false,
+				value: attrs[ key ]
+			}
+		}
+
+		return ne;
+	},
+
 	// nextTick - by stagas / public domain
-  	nextTick: (function () {
-      var queue = [],
-			dirty = false,
-			fn,
-			hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
-			messageName = 'nexttick',
-			trigger = (function () {
-				return hasPostMessage
-					? function trigger () {
-					global.postMessage(messageName, '*');
-				}
-				: function trigger () {
-					setTimeout(function () { processQueue() }, 0);
-				};
-			}()),
-			processQueue = (function () {
-				return hasPostMessage
-					? function processQueue (event) {
-						if (event.source === global && event.data === messageName) {
-							event.stopPropagation();
-							flushQueue();
-						}
+	nextTick: (function () {
+    var queue = [],
+		dirty = false,
+		fn,
+		hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
+		messageName = 'nexttick',
+		trigger = (function () {
+			return hasPostMessage
+				? function trigger () {
+				global.postMessage(messageName, '*');
+			}
+			: function trigger () {
+				setTimeout(function () { processQueue() }, 0);
+			};
+		}()),
+		processQueue = (function () {
+			return hasPostMessage
+				? function processQueue (event) {
+					if (event.source === global && event.data === messageName) {
+						event.stopPropagation();
+						flushQueue();
 					}
-					: flushQueue;
-      	})()
-      ;
+				}
+				: flushQueue;
+    	})()
+    ;
 
-      function flushQueue () {
-          while (fn = queue.shift()) {
-              fn();
-          }
-          dirty = false;
-      }
+    function flushQueue () {
+        while (fn = queue.shift()) {
+            fn();
+        }
+        dirty = false;
+    }
 
-      function nextTick (fn) {
-          queue.push(fn);
-          if (dirty) return;
-          dirty = true;
-          trigger();
-      }
+    function nextTick (fn) {
+        queue.push(fn);
+        if (dirty) return;
+        dirty = true;
+        trigger();
+    }
 
-      if (hasPostMessage) global.addEventListener('message', processQueue, true);
+    if (hasPostMessage) global.addEventListener('message', processQueue, true);
 
-      nextTick.removeListener = function () {
-          global.removeEventListener('message', processQueue, true);
-      }
+    nextTick.removeListener = function () {
+        global.removeEventListener('message', processQueue, true);
+    }
 
-      return nextTick;
+    return nextTick;
   })(),
 
   findPivot: function( node ){
@@ -134,7 +154,12 @@ var Utils = {
 	  	}
 
   		return found;
-  }
+  },
+
+	isLeaf: function( node ){
+		var cons = node && node.constructor;
+		return !cons || cons == String || cons == Number || cons == Boolean;
+	}
 };
 //#build
 

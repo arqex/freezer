@@ -1,4 +1,11 @@
 # Freezer Changelog
+###v0.10.0
+* Fixes not returning the pivot on non-modifying updates. Thanks @oigewan
+* Adds `getEventHub` method.
+* Refactors event triggering on nodes. Now the freezer object shares the events with the root node.
+* The prototype of the objects are now preserved, so class instances can now be saved in a freezer store.
+
+
 ###v0.9.6
 * Fixes orphan markDirty call.
 * Fixes setting null value. Thanks @kuraga

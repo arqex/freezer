@@ -38,7 +38,7 @@ describe("Freezer test", function(){
 	it( "Reset with a previous state", function( done ){
 		var counter = 0;
 		data.set({b: 5});
-		freezer.on('update', function(){
+		freezer.getEventHub().on('update', function(){
 			if( !counter ){
 				freezer.set( data );
 				counter++;
@@ -62,7 +62,7 @@ describe("Freezer test", function(){
 	it( "Reset with a value", function( done ){
 		var counter = 0;
 		data.set({b: 5});
-		freezer.on('update', function(){
+		freezer.getEventHub().on('update', function(){
 			if( !counter ){
 				freezer.set( {z:{a:1}} );
 				counter++;
@@ -228,7 +228,7 @@ describe("Freezer test", function(){
 		freezer.get().set( {c: freezer.get().b[0] } );
 
 		var count = 0;
-		freezer.on('update', function(){
+		freezer.getEventHub().on('update', function(){
 			count++;
 		});
 
@@ -315,7 +315,7 @@ describe("Freezer test", function(){
 			assert.equal( newData.__.pivot, 0 );
 			done();
 		}
-		freezer.on( 'update', handler);
+		freezer.getEventHub().on( 'update', handler);
 
 		var updated = data.pivot()
 			.b.set({u: 10})
@@ -335,7 +335,7 @@ describe("Freezer test", function(){
 		data.getListener().on('update', handler(2));
 		data.c.getListener().on('update', handler(3));
 		data.c[2].getListener().on('update', handler(4));
-		freezer.on('update', handler(1));
+		freezer.getEventHub().on('update', handler(1));
 
 		data = data.pivot().c[2].set( {w:4} ).now();
 		data = data.pivot().c[2].set( {w:5} ).now();
@@ -360,7 +360,7 @@ describe("Freezer test", function(){
 		data.getListener().on('update', handler(2));
 		data.c.getListener().on('update', handler(3));
 		data.c[2].getListener().on('update', handler(4));
-		freezer.on('update', handler(1));
+		freezer.getEventHub().on('update', handler(1));
 
 		data = data.pivot().c[2].set( {w:4} );
 		data = data.pivot().c[2].set( {w:5} );
@@ -389,5 +389,22 @@ describe("Freezer test", function(){
 
 		assert.strictEqual(pivotNode.a.b.c.test, 2);
 	});
+
+	it('Preserve instance methods', function(){
+		var MyClass = function(){ console.log('oh my') },
+			freezer = new Freezer({})
+		;
+
+		MyClass.prototype.sayHello = function() { return 'Hello' };
+
+		var instance = new MyClass();
+		freezer.get().set({instance: instance});
+		freezer.get().instance.set({a:1});
+		assert.equal(freezer.get().instance.a, 1);
+		assert.equal(freezer.get().instance.sayHello(), 'Hello');
+		freezer.get().instance.set({a:2});
+		assert.equal(freezer.get().instance.a, 2);
+		assert.equal(freezer.get().instance.sayHello(), 'Hello');
+	})
 
 });

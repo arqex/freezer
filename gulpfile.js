@@ -39,19 +39,22 @@ var cr = ('/*\n%%name%% v%%version%%\n%%homepage%%\n%%license%%: https://github.
 	.replace( '%%homepage%%', pack.homepage)
 ;
 
+function handleErrors( err ){
+	console.log( err );
+}
 gulp.task( 'build', function(){
 	var src = core( fs.readFileSync('./src/utils.js') ) +
+			core( fs.readFileSync('./src/nodeCreator.js') ) +
 			core( fs.readFileSync('./src/emitter.js') ) +
-			core( fs.readFileSync('./src/mixins.js') ) +
 			core( fs.readFileSync('./src/frozen.js') ) +
-			core( fs.readFileSync('./src/' + packageName + '.js'))
+			core( fs.readFileSync('./src/' + packageName + '.js')),
 		build = wrap( src )
 	;
 
 	fs.writeFileSync( './build/' + packageName + '.js', build );
 
-	gulp.src('./build/' + packageName + '.js')
-		.pipe( uglify() )
+	gulp.src('./build/' + packageName + '.js')		
+		.pipe( uglify().on('error', handleErrors) )
 		.pipe( rename( packageName + '.min.js' ))
 		.pipe( insert.prepend( cr ))
 		.pipe( gulp.dest('./build') )

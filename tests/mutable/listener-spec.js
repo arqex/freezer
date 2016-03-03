@@ -47,7 +47,7 @@ describe("Freezer events test", function(){
 
 	it( "Listen to root updates", function( done ){
 
-		freezer.on( 'update', function(){
+		freezer.getEventHub().on( 'update', function(){
 			assert.equal( freezer.getData().b.c, 3 );
 			done();
 		});
@@ -88,7 +88,7 @@ describe("Freezer events test", function(){
 
 		data.b.set( {c: 3} );
 
-		freezer.on( 'update', function(){
+		freezer.getEventHub().on( 'update', function(){
 			assert.deepEqual( freezer.getData(), data );
 			done();
 		});
@@ -150,7 +150,7 @@ describe("Freezer events test", function(){
 	it( "Reset of node should trigger an update", function( done ){
 		var foobar = { foo: 'bar', bar: 'foo' };
 
-		freezer.on( 'update', function( newData ){
+		freezer.getEventHub().on( 'update', function( newData ){
 			assert.deepEqual( newData.b, foobar );
 			done();
 		});

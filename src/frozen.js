@@ -1,41 +1,31 @@
 'use strict';
 
 var Utils = require( './utils' ),
-	Mixins = require( './mixins'),
+	nodeCreator = require( './nodeCreator'),
 	Emitter = require('./emitter')
 ;
 
 //#build
 var Frozen = {
-	freeze: function( node, notify, freezeFn, live ){
+	freeze: function( node, store ){
 		if( node && node.__ ){
 			return node;
 		}
 
 		var me = this,
-			frozen, mixin, cons
+			frozen = nodeCreator.clone(node)
 		;
-
-		if( node.constructor == Array ){
-			frozen = this.createArray( node.length );
-		}
-		else {
-			frozen = Object.create( Mixins.Hash );
-		}
 
 		Utils.addNE( frozen, { __: {
 			listener: false,
 			parents: [],
-			notify: notify,
-			freezeFn: freezeFn,
-			live: live || false
+			store: store
 		}});
 
 		// Freeze children
 		Utils.each( node, function( child, key ){
-			cons = child && child.constructor;
-			if( cons == Array || cons == Object ){
-				child = me.freeze( child, notify, freezeFn, live );
+			if( !Utils.isLeaf( child ) ){
+				child = me.freeze( child, store );
 			}
 
 			if( child && child.__ ){
@@ -45,40 +35,7 @@ var Frozen = {
 			frozen[ key ] = child;
 		});
 
-		freezeFn( frozen );
-
-		return frozen;
-	},
-
-	update: function( type, node, options ){
-		if( !this[ type ])
-			return Utils.error( 'Unknown update type: ' + type );
-
-		return this[ type ]( node, options );
-	},
-
-	reset: function( node, value ){
-		var me = this,
-			_ = node.__,
-			frozen = value
-		;
-
-		if( !frozen.__ ){
-			frozen = this.freeze( value, _.notify, _.freezeFn, _.live );
-		}
-
-		frozen.__.listener = _.listener;
-		frozen.__.parents = _.parents;
-
-		// Set back the parent on the children
-		// that have been updated
-		this.fixChildren( frozen, node );
-		Utils.each( frozen, function( child ){
-			if( child && child.__ ){
-				me.removeParent( node );
-				me.addParent( child, frozen );
-			}
-		});
+		store.freezeFn( frozen );
 
 		return frozen;
 	},
@@ -92,7 +49,6 @@ var Frozen = {
 		;
 
 		if( trans ){
-
 			for( var attr in attrs )
 				trans[ attr ] = attrs[ attr ];
 			return node;
@@ -100,8 +56,8 @@ var Frozen = {
 
 		var me = this,
 			frozen = this.copyMeta( node ),
-			notify = _.notify,
-			val, cons, key, isFrozen
+			store = _.store,
+			val, key, isFrozen
 		;
 
 		Utils.each( node, function( child, key ){
@@ -118,10 +74,8 @@ var Frozen = {
 				return frozen[ key ] = child;
 			}
 
-			cons = val && val.constructor;
-
-			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, _.freezeFn, _.live );
+			if( !Utils.isLeaf( val ) )
+				val = me.freeze( val, store );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -134,10 +88,9 @@ var Frozen = {
 
 		for( key in attrs ) {
 			val = attrs[ key ];
-			cons = val && val.constructor;
 
-			if( cons == Array || cons == Object )
-				val = me.freeze( val, notify, _.freezeFn, _.live );
+			if( !Utils.isLeaf( val ) )
+				val = me.freeze( val, store );
 
 			if( val && val.__ )
 				me.addParent( val, frozen );
@@ -145,7 +98,7 @@ var Frozen = {
 			frozen[ key ] = val;
 		}
 
-		_.freezeFn( frozen );
+		_.store.freezeFn( frozen );
 
 		this.refreshParents( node, frozen );
 
@@ -153,36 +106,27 @@ var Frozen = {
 	},
 
 	replace: function( node, replacement ) {
-
 		var me = this,
-			cons = replacement && replacement.constructor,
 			_ = node.__,
 			frozen = replacement
 		;
 
-		if( cons == Array || cons == Object ) {
+		if( !Utils.isLeaf( replacement ) ) {
 
-			frozen = me.freeze( replacement, _.notify, _.freezeFn, _.live );
-
+			frozen = me.freeze( replacement, _.store );
 			frozen.__.parents = _.parents;
+			frozen.__.updateRoot = _.updateRoot;
 
 			// Add the current listener if exists, replacing a
 			// previous listener in the frozen if existed
 			if( _.listener )
 				frozen.__.listener = _.listener;
+		}
+		if( frozen ){
+			this.fixChildren( frozen, node );
+		}
+		this.refreshParents( node, frozen );
 
-			// Since the parents will be refreshed directly,
-			// Trigger the listener here
-			this.trigger( frozen, 'update', frozen, _.live );
-		}
-
-		// Refresh the parent nodes directly
-		if( !_.parents.length && _.listener ){
-			_.listener.trigger( 'immediate', node, frozen );
-		}
-		for (var i = _.parents.length - 1; i >= 0; i--) {
-				this.refresh( _.parents[i], node, frozen );
-		}
 		return frozen;
 	},
 
@@ -216,7 +160,7 @@ var Frozen = {
 			frozen[ key ] = child;
 		});
 
-		node.__.freezeFn( frozen );
+		node.__.store.freezeFn( frozen );
 		this.refreshParents( node, frozen );
 
 		return frozen;
@@ -236,7 +180,7 @@ var Frozen = {
 			frozen = this.copyMeta( node ),
 			index = args[0],
 			deleteIndex = index + args[1],
-			con, child
+			child
 		;
 
 		// Clone the array
@@ -257,10 +201,9 @@ var Frozen = {
 		if( args.length > 1 ){
 			for (var i = args.length - 1; i >= 2; i--) {
 				child = args[i];
-				con = child && child.constructor;
 
-				if( con == Array || con == Object )
-					child = this.freeze( child, _.notify, _.freezeFn, _.live );
+				if( !Utils.isLeaf( child ) )
+					child = this.freeze( child, _.store );
 
 				if( child && child.__ )
 					this.addParent( child, frozen );
@@ -272,7 +215,7 @@ var Frozen = {
 		// splice
 		Array.prototype.splice.apply( frozen, args );
 
-		node.__.freezeFn( frozen );
+		_.store.freezeFn( frozen );
 		this.refreshParents( node, frozen );
 
 		return frozen;
@@ -379,7 +322,7 @@ var Frozen = {
 			frozen[ key ] = child;
 		});
 
-		node.__.freezeFn( frozen );
+		node.__.store.freezeFn( frozen );
 
 		this.refreshParents( node, frozen );
 	},
@@ -410,26 +353,17 @@ var Frozen = {
 
 	copyMeta: function( node ){
 		var me = this,
-			frozen
+			frozen = nodeCreator.clone( node ),
+			_ = node.__
 		;
 
-		if( node.constructor == Array ){
-			frozen = this.createArray( node.length );
-		}
-		else {
-			frozen = Object.create( Mixins.Hash );
-		}
-
-		var _ = node.__;
-
 		Utils.addNE( frozen, {__: {
-			notify: _.notify,
+			store: _.store,
+			updateRoot: _.updateRoot,
 			listener: _.listener,
 			parents: _.parents.slice( 0 ),
 			trans: _.trans,
-			freezeFn: _.freezeFn,
 			pivot: _.pivot,
-			live: _.live
 		}});
 
 		if( _.pivot )
@@ -440,18 +374,18 @@ var Frozen = {
 
 	refreshParents: function( oldChild, newChild ){
 		var _ = oldChild.__,
+			parents = _.parents.length,
 			i
 		;
 
-		this.trigger( newChild, 'update', newChild, _.live );
-
-		if( !_.parents.length ){
-			if( _.listener ){
-				_.listener.trigger( 'immediate', oldChild, newChild );
-			}
+		if( oldChild.__.updateRoot ){
+			oldChild.__.updateRoot( oldChild, newChild );
 		}
-		else {
-			for (i = _.parents.length - 1; i >= 0; i--) {
+		if( newChild ){
+			this.trigger( newChild, 'update', newChild, _.store.live );
+		}
+		if( parents ){
+			for (i = parents - 1; i >= 0; i--) {
 				this.refresh( _.parents[i], oldChild, newChild );
 			}
 		}
@@ -519,27 +453,10 @@ var Frozen = {
 		}
 
 		return l;
-	},
-
-	createArray: (function(){
-		// Set createArray method
-		if( [].__proto__ )
-			return function( length ){
-				var arr = new Array( length );
-				arr.__proto__ = Mixins.List;
-				return arr;
-			}
-		return function( length ){
-			var arr = new Array( length ),
-				methods = Mixins.arrayMethods
-			;
-			for( var m in methods ){
-				arr[ m ] = methods[ m ];
-			}
-			return arr;
-		}
-	})()
+	}
 };
+
+nodeCreator.init( Frozen );
 //#build
 
 module.exports = Frozen;

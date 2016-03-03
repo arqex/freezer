@@ -52,7 +52,7 @@ describe("Freezer events test", function(){
 			count = 0
 		;
 
-		freezer.on( 'update', function( data ){
+		freezer.getEventHub().on( 'update', function( data ){
 			assert.equal( data.b.c, 3 );
 			done();
 		});
@@ -74,7 +74,7 @@ describe("Freezer events test", function(){
 		data.getListener().on('update', handler(2));
 		data.c.getListener().on('update', handler(3));
 		data.c[2].getListener().on('update', handler(4));
-		freezer.on('update', handler(1));
+		freezer.getEventHub().on('update', handler(1));
 
 		data.c[2].set( {w:4} );
 
@@ -87,7 +87,7 @@ describe("Freezer events test", function(){
 			count = 0
 		;
 
-		freezer.on( 'update', function( data ){
+		freezer.getEventHub().on( 'update', function( data ){
 			if( ++count == 3 ){
 				assert.equal( data.b.c, 3 );
 				done();
@@ -110,19 +110,18 @@ describe("Freezer events test", function(){
 			}
 		;
 
-		freezer.on('update', handler(1));
-		data.getListener().on('update', handler(2));
+		freezer.getEventHub().on('update', handler(1));
 		data.c.getListener().on('update', handler(3));
 		data.c[2].getListener().on('update', handler(4));
 
 		data.c[2].set( {w:4} );
 
-		assert.equal( triggered, '4321' );
+		assert.equal( triggered, '431' );
 	});
 
 	it( "Listen to root updates", function( done ){
 
-		freezer.on( 'update', function(){
+		freezer.getEventHub().on( 'update', function(){
 			assert.equal( freezer.getData().b.c, 3 );
 			done();
 		});
@@ -131,7 +130,7 @@ describe("Freezer events test", function(){
 	});
 
 	it( "Listen to multiple root updates", function( done ){
-		freezer.on( 'update', function( data ){
+		freezer.getEventHub().on( 'update', function( data ){
 			assert.equal( data.b.c, 3 );
 			assert.equal( freezer.get().b.c, 3 );
 			done();
@@ -148,7 +147,7 @@ describe("Freezer events test", function(){
 			count = 0
 		;
 
-		freezer.on( 'update', function( data ){
+		freezer.getEventHub().on( 'update', function( data ){
 			if( ++count == 3 ){
 				assert.equal( data.b.c, 3 );
 				assert.equal( freezer.get().b.c, 3 );
@@ -195,7 +194,7 @@ describe("Freezer events test", function(){
 
 		data.b.set( {c: 3} );
 
-		freezer.on( 'update', function(){
+		freezer.getEventHub().on( 'update', function(){
 			assert.deepEqual( freezer.getData(), data );
 			done();
 		});
@@ -257,7 +256,7 @@ describe("Freezer events test", function(){
 	it( "Reset of node should trigger an update", function( done ){
 		var foobar = { foo: 'bar', bar: 'foo' };
 
-		freezer.on( 'update', function( newData ){
+		freezer.getEventHub().on( 'update', function( newData ){
 			assert.deepEqual( newData.b, foobar );
 			done();
 		});
@@ -294,13 +293,13 @@ describe("Freezer events test", function(){
 
 				called = true;
 				assert.equal( update.b, undefined );
-				freezer.off('update', handler);
+				freezer.getEventHub().off('update', handler);
 				update.remove('a');
 				setTimeout( done, 100 );
 			}
 		;
 
-		freezer.on('update', handler);
+		freezer.getEventHub().on('update', handler);
 		data.remove('b');
 	});
 
@@ -312,9 +311,9 @@ describe("Freezer events test", function(){
 			assert.equal( freezer.get().a, 2 );
 			triggered++;
 		};
-		freezer.on( 'update', handler );
+		freezer.getEventHub().on( 'update', handler );
 		freezer.get().set({a:2}).now();
-		freezer.off( 'update', handler );
+		freezer.getEventHub().off( 'update', handler );
 
 
 		handler = function( update ){
@@ -322,9 +321,9 @@ describe("Freezer events test", function(){
 			assert.equal( freezer.get().b, undefined );
 			triggered++;
 		};
-		freezer.on( 'update', handler );
+		freezer.getEventHub().on( 'update', handler );
 		freezer.get().remove('b').now();
-		freezer.off( 'update', handler );
+		freezer.getEventHub().off( 'update', handler );
 
 
 		handler = function( update ){
@@ -332,9 +331,9 @@ describe("Freezer events test", function(){
 			assert.equal( freezer.get().c[3], 3 );
 			triggered++;
 		};
-		freezer.on( 'update', handler );
+		freezer.getEventHub().on( 'update', handler );
 		freezer.get().c.push(3).now();
-		freezer.off( 'update', handler );
+		freezer.getEventHub().off( 'update', handler );
 
 
 		handler = function( update ){
@@ -343,9 +342,9 @@ describe("Freezer events test", function(){
 			assert.equal( update.c.length, 3 );
 			triggered++;
 		};
-		freezer.on( 'update', handler );
+		freezer.getEventHub().on( 'update', handler );
 		freezer.get().c.shift().now();
-		freezer.off( 'update', handler );
+		freezer.getEventHub().off( 'update', handler );
 
 		assert.equal( triggered, 4 );
 	});
@@ -362,7 +361,7 @@ describe("Freezer events test", function(){
 		data.getListener().on('update', handler(2));
 		data.c.getListener().on('update', handler(3));
 		data.c[2].getListener().on('update', handler(4));
-		freezer.on('update', handler(1));
+		freezer.getEventHub().on('update', handler(1));
 
 		data.c[2].set( {w:4} ).now();
 
@@ -370,7 +369,7 @@ describe("Freezer events test", function(){
 	});
 
 	it( "Now must trigger just one event", function( done ){
-		freezer.on('update', function( update ){
+		freezer.getEventHub().on('update', function( update ){
 			// If we get here and call done twice
 			// an error will be thrown
 			assert.equal( update.a, 10 );
@@ -393,7 +392,7 @@ describe("Freezer events test", function(){
 			})
 		;
 
-		freezer.trigger('someEvent', 1, 2);
+		freezer.getEventHub().trigger('someEvent', 1, 2);
 
 		setTimeout( function(){
 			assert.equal( out, 'someEvent12 event someEvent12' );

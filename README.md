@@ -1,12 +1,14 @@
 # Freezer
 
-A tree data structure that is always updated from the root, even if the modification is triggered by one of the leaves, making it easier to think in a reactive way.
+A tree data structure that emits events on updates, even if the modification is triggered by one of the leaves, making it easier to think in a reactive way.
 
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/freezer)
 [![npm version](https://badge.fury.io/js/freezer-js.svg)](http://badge.fury.io/js/freezer-js)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/arqex/freezer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Are you looking for an immutable.js alternative? Freezer is made with React.js in mind and uses real immutable structures. It is the perfect store for your Flux implementation. 
+Are you looking for an immutable.js alternative? Freezer is made with React.js in mind and it uses real immutable structures. It is the perfect store for you application.
+
+Using freezer you don't need a flux framework, just listen to its `update` events to refresh your UI. [Goodbye boilerplate code!](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 
 What makes Freezer special is:
 
@@ -22,7 +24,7 @@ Do you want to know more?
 * [Demos](#demos)
 * [Installation](#installation)
 * [Example](#example-of-use)
-* [Motivation](#why-another-store)
+* [Motivation](#why-another-state-holder)
 * [Freezer API](#api)
 * [Updating the data](#update-methods)
 * [Events](#events-1)
@@ -38,7 +40,7 @@ Do you want to know more?
 * [How to use React and Freezer together](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 * [A JSON editor with undo and redo](http://jsbin.com/hugusi/1/edit?js,output), and [here the blog article](http://arqex.com/991/json-editor-react-immutable-data) explaining it .
 * [The flux comparison project](https://github.com/voronianski/flux-comparison).
-* [Freezer receiving data from websockets in the Flux Challenge.](https://github.com/staltz/flux-challenge/tree/master/submissions/arqex).
+* [Freezer receiving data from websockets in the Flux Challenge](https://github.com/staltz/flux-challenge/tree/master/submissions/arqex).
 * [Use freezer with redux-devtools](https://github.com/arqex/freezer-redux-devtools).
 
 
@@ -48,7 +50,7 @@ Freezer is available as a npm package.
 npm install freezer-js
 ```
 
-It is possible to download the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~20KB) or [minified](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~9KB).
+It is possible to download a file to use it directly in the browser. Grab the [full version](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.js) (~20KB) or [minified one](https://raw.githubusercontent.com/arqex/freezer/master/build/freezer.min.js) (~9KB).
 
 
 ## Example
@@ -136,13 +138,15 @@ freezer.get() === state; // true
 
 **Freezer** is inspired by other tree cursor libraries, specifically [Cortex](https://github.com/mquan/cortex), that try to solve an inconvenience of the Flux architecture:
 
-* If you have a store with deep nested data and you need to update some value from a child component that reflects that data, you need to dispatch an action and from the top of the store look for the bit of data again to update it. That may involve a lot of extra code to propagate the change and it is more painful when you consider that the component already knew what data to update.
+* If you have a store with deep nested data and you need to update some value from a child component that reflects that data, you need to dispatch an action that needs to look for the bit of data again to update it. That may involve a lot of extra code to propagate the change and it is more painful when you consider that the component already knew what data to update.
 
 On the other hand, data changes always flowing in the same direction is what makes the Flux architecure so easy to reason about. If we let every component update the data independently, we are building a mess again.
 
 So *Freezer*, instead of letting the child component update the data directly, gives every node the tools to make the change. The updates are always made by the root of the store and the data can keep flowing in just one direction.
 
-Imagine that we have the following tree structure as our app state: ![Initial tree](img/initialTree.png)
+Imagine that we have the following tree structure as our app state:
+
+![Initial tree](img/initialTree.png)
 
 And we have a component responsible for handling the `state.c.f` ( the yellow node ) part of the data. Its scope is just that part of the tree, so the component receives it as a prop:
 ```js
@@ -196,7 +200,7 @@ And then, Freezer's API is really simple and only has 2 methods: `get` and `set`
 Returns a frozen object with the freezer data.
 ```js
 // Logs: {a: 'hola', b:[1,2, [3,4,5]], c: false }
-console.log( freezer.get() ); 
+console.log( freezer.get() );
 ```
 The data returned is actually formed by arrays and objects, but they are sealed to prevent their mutation and they have some methods in them to update the store.
 Everytime an update is performed, `get` will return a new frozen object.
@@ -219,13 +223,27 @@ freezer.set( state );
 console.log( freezer.get().c ); // false
 ```
 
-#### Events
+#### getEventHub()
 
 Every time the data is updated, an `update` event is triggered on the freezer object. In order to use those events, *Freezer* implements the [listener API](#listener-api), and `on`, `once`, `off` and `trigger` methods are available on them.
 
+If you need to use the events but you don't want to give access to the complete store, you can use the `getEventHub` function:
+```js
+var f = new Freezer({my: 'data'}),
+  hub = f.getEventHub()
+;
+
+// Now you can use freezer's event with hub
+hub.on('do:action', function(){ console.log('Do it!') });
+hub.trigger('do:action'); // logs Do it!
+
+// But you don't have access to the store data with it
+hub.get(); // undefined
+```
+
 ## Update methods
 
-Freezer data has three different types of nodes: *Hashes*, *Arrays* and *leaf nodes*. A leaf node can't be updated by itself and needs to be updated using its parent node. Every updating method returns a new immutable object with the new node result of the update:
+Freezer data has three different types of nodes: *Objects*, *Arrays* and *leaf nodes*. A leaf node can't be updated by itself and needs to be updated using its parent node. Every updating method returns a new immutable object with the new node result of the update:
 ```js
 var freezer = new Freezer({obj: {a:'hola', b:'adios'}, arr: [1,2]});
 
@@ -236,12 +254,14 @@ var updatedArr = freezer.get().arr.unshift( 0 );
 console.log( updatedArr ); // [0,1,2]
 
 // {obj: {a:'hello', b:'adios'}, arr: [0,1,2]}
-console.log( freezer.get() ); 
+console.log( freezer.get() );
 ```
 
-Both *Array* and *Hash* nodes have a `set` method to update or add elements to the node and a `reset` method to replace the node with other data.
+Both *Array* and *Object* nodes have a `set` method to update or add elements to the node and a `reset` method to replace the node with other data.
 
-#### set( keyOrHash, value )
+Class instances can be stored in a freezer store. They will be handled like objects but its methods will be preserved. Since the instance will be frozen, instance setter methods could be not working for update the object.
+
+#### set( keyOrObject, value )
 Arrays and hashes can update their children using the `set` method. It accepts a hash with the keys and values to update or two arguments: the key and the value.
 ```js
 var freezer = new Freezer({obj: {a:'hola', b:'adios'}, arr: [1,2]});
@@ -257,7 +277,7 @@ console.log( freezer.get() )
 ```
 
 #### reset( newData )
-Reset/replaces the node with new data. Listeners are preserved if the new data is an `array` or `object`, so it is possible to listen to reset calls. 
+Reset/replaces the node with new data. Listeners are preserved if the new data is an `array` or `object`, so it is possible to listen to reset calls.
 
 ```js
 var freezer = new Freezer({ foobar: {a: 'a', b: 'b', c: [0, 1, 2] } });
@@ -303,7 +323,7 @@ var update = freezer.get().people.pivot()
     .John.set({age: 30})
     .Alice.set({age: 30})
 ;
-console.log( update ); 
+console.log( update );
 // {people:{ John: {age: 30}, Alice: {age: 30} }
 ```
 
@@ -322,7 +342,7 @@ freezer.on('update', function( update ){
 });
 
 freezer.get().set({test: 'change'});
-console.log('changed'); 
+console.log('changed');
 // logs 'changed' and then 'event' on the next tick
 
 freezer.get().set({test: 'adios'}).now();
@@ -333,7 +353,7 @@ Use it in cases that you need immediate updates. For example, if you are using R
 
 Using Freezer's [`live` option](#api) is like using `now` on every update.
 
-## Hash methods
+## Object methods
 #### remove( keyOrKeys )
 Removes elements from a hash node. It accepts a string or an array with the names of the strings to remove.
 
@@ -418,7 +438,7 @@ Store.trigger('add', 4, 5); // Will log 'add', 4, 5
 This is a nice way of binding [reactions](#usage-with-react) to more than one type of event.
 
 ## Batch updates
-At some point you will find yourself wanting to apply multiple changes at a time. The full tree is re-generated on each change, but the only tree you probably need is the final result of all those changes. 
+At some point you will find yourself wanting to apply multiple changes at a time. The full tree is re-generated on each change, but the only tree you probably need is the final result of all those changes.
 
 Freezer nodes offer a `transact` method to make local modifications to them without generating intermediate frozen trees, and a `run` method to commit all the changes at once. This way your app can have really good performance.
 
@@ -450,10 +470,10 @@ freezer.get().list; // [1000, 1, 2, ..., 999]
 
 Transactions are designed to always commit the changes, so if you start a transaction but you forget to call `run`, it will be called automatically on the next tick.
 
-It is possible to update the child nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confusion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve the performance much because they have a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior. 
+It is possible to update the child nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confusion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve the performance much because they have a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior.
 
 ## Usage with React
-Creating data-driven React applications using Freezer is really simple. Just wrap your top React component in order to pass the app state as a prop. Then, re-render on any state change.
+Creating data-driven React applications using Freezer is really simple. Freezer is meant to be the only store for your app, then just wrap your top React component in order to pass the app state as a prop. Re-render on any state change you will have a reactive app out of the box.
 
 ```js
 var AppContainer = React.createClass({
@@ -468,7 +488,7 @@ var AppContainer = React.createClass({
 });
 ```
 
-Freezer can be used along with any Flux library, but it is also possible to use it in a Flux-like way without any framework.
+Freezer can be used along with any Flux library, but it is also possible to *use it in a Flux-like way without any framework*.
 
 Instead of calling actions we can trigger custom events, thanks to the open event system built in Freezer. Those events accept any number of parameters.
 
@@ -489,7 +509,7 @@ Listener methods that update the state are called **reactions**, ( we are buildi
 
 If you need to coordinate state updates, you can trigger new events when a reaction finishes, or listen to specific nodes, without the need for `waitFor`.
 
-This is all it takes to understand Flux apps with Freezer. No complex concepts like observers, reducers, payloads or action creators. Just events and almost no boilerplate code.
+This is all it takes to understand Flux apps with Freezer. No complex concepts like observers, reducers, payloads or action creators. Just events and almost no boilerplate code. It's [the simplest way of using React](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 
 You can check this approach working in the [TodoMVC sample app](https://github.com/arqex/freezer-todomvc), or in the [flux comparison project](https://github.com/voronianski/flux-comparison).
 
