@@ -32,14 +32,9 @@ describe("Freezer events test", function(){
 		var listener = data.b.getListener();
 
 		listener.on( 'update', function( data ){
-			try {
-				assert.equal( data.c, 3 );
-				assert.equal( freezer.getData().b.c, 3 );
-				done();
-			}
-			catch( e ){
-				console.log( e.stack );
-			}
+			assert.equal( data.c, 3 );
+			assert.equal( freezer.getData().b.c, 3 );
+			done();
 		});
 
 		data.b.set( {c: 3} );

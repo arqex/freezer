@@ -34,17 +34,28 @@ describe("Freezer events test", function(){
 		;
 
 		listener.on( 'update', function( data ){
-			try {
-				assert.equal( data.c, 3 );
-				assert.equal( freezer.getData().b.c, 3 );
-				done();
-			}
-			catch( e ){
-				console.log( e.stack );
-			}
+			assert.equal( data.c, 3 );
+			assert.equal( freezer.getData().b.c, 3 );
+			done();
 		});
 
 		data.b.set( {c: 3} );
+	});
+
+	it( "Subscribe after update shouldn't trigger", function( done ){
+		var listener = data.b.getListener(),
+			count = 0
+		;
+
+		data.b.set( {c: 3} );
+
+		listener.on( 'update', function( data ){
+			count++;
+		});
+
+		setTimeout(function () {
+			assert.equal( count, 0 );
+		}, 250);
 	});
 
 	it( "Listen to multiple node updates", function( done ){
