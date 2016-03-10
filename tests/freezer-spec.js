@@ -11,7 +11,8 @@ var example = {
 	a: 1,
 	b: { z: 0, y: 1, x:[ 'A', 'B'] },
 	c: [1, 2, {w: 3}],
-	d: null
+	d: null,
+	e: Freezer.createLeaf({ objProp: true })
 };
 
 describe("Freezer test", function(){
@@ -27,12 +28,15 @@ describe("Freezer test", function(){
 		assert.equal( data.c[0], example.c[0] );
 		assert.equal( data.c[2].w, example.c[2].w );
 		assert.equal( data.d, example.d);
+		assert.equal( data.e.get(), example.e.get());
 	});
 
 	it( "Leaves dont have an __", function(){
 		assert.equal( data.a.__, undefined );
 		assert.equal( data.b.z.__, undefined );
 		assert.equal( data.c[1].__, undefined );
+		assert.equal( data.e.__, undefined );
+		assert.equal( data.e.get().__, undefined );
 	});
 
 	it( "Reset with a previous state", function( done ){
@@ -268,7 +272,8 @@ describe("Freezer test", function(){
 		var second = freezer.getData();
 
 		assert.equal( second, data );
-		assert.equal( second.e, undefined );
+		assert.equal( second.e.get(), data.e.get() );
+		assert.equal( second.f, undefined );
 		assert.equal( second.c, data.c );
 		assert.equal( second.b.y, data.b.y );
 	});

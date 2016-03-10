@@ -110,5 +110,5 @@ var Freezer = function( initialValue, options ) {
 };
 
 //#build
-
+Freezer.createLeaf = Utils.createLeaf;
 module.exports = Freezer;
