@@ -1,5 +1,10 @@
 'use strict';
 
+var Leaf = function (value) {
+	this.value = value;
+	this.get = function() { return value };
+};
+
 //#build
 var global = (new Function("return this")());
 
@@ -158,7 +163,11 @@ var Utils = {
 
 	isLeaf: function( node ){
 		var cons = node && node.constructor;
-		return !cons || cons == String || cons == Number || cons == Boolean;
+		return !cons || cons == String || cons == Number || cons == Boolean || cons == Leaf;
+	},
+
+	createLeaf: function( value ) {
+		return new Leaf(value);
 	}
 };
 //#build
