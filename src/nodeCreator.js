@@ -169,7 +169,6 @@ var nodeCreator = {
 					return Object.create( FrozenObject );
 				}
 				else {
-					console.log('instance');
 					return Object.create( cons.prototype, objectMethods );
 				}
 			}

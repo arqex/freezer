@@ -1,4 +1,4 @@
-/* freezer-js v0.10.0 (3-3-2016)
+/* freezer-js v0.10.0 (29-3-2016)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -341,7 +341,6 @@ var nodeCreator = {
 					return Object.create( FrozenObject );
 				}
 				else {
-					console.log('instance');
 					return Object.create( cons.prototype, objectMethods );
 				}
 			}
