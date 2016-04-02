@@ -54,7 +54,7 @@ var emitterProto = {
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
 			special = specialEvents.indexOf( eventName ) != -1,
-			i, listener
+			i, listener, returnValue, lastValue
 		;
 
 		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
@@ -64,7 +64,7 @@ var emitterProto = {
 			listener = listeners[i];
 
 			if( listener.callback )
-				listener.callback.apply( this, args );
+				lastValue = listener.callback.apply( this, args );
 			else {
 				// If there is not a callback, remove!
 				listener.once = true;
@@ -72,6 +72,10 @@ var emitterProto = {
 
 			if( listener.once )
 				onceListeners.push( i );
+
+			if( lastValue !== undefined ){
+				returnValue = lastValue;
+			}
 		}
 
 		// Remove listeners marked as once
@@ -81,7 +85,7 @@ var emitterProto = {
 
 		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
 
-		return this;
+		return returnValue;
 	}
 };
 

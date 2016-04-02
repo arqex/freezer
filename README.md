@@ -473,34 +473,42 @@ Transactions are designed to always commit the changes, so if you start a transa
 It is possible to update the child nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confusion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve the performance much because they have a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior.
 
 ## Usage with React
-Creating data-driven React applications using Freezer is really simple. Freezer is meant to be the only store for your app, then just wrap your top React component in order to pass the app state as a prop. Re-render on any state change you will have a reactive app out of the box.
+Creating data-driven React applications using Freezer as your only app state holder is really simple:
 
+1 Wrap your top React component in order to pass the app state as a prop.
+2 Re-render on any state change.
+
+That's it, you have your reactive app running:
 ```js
+// My only store
+var freezer = new Freezer({/* My initial state */});
+
 var AppContainer = React.createClass({
     render: function(){
+        // 1. Your app receives the state
         var state = freezer.get();
         return <App state={ state } />;
     },
     componentDidMount: function(){
         var me = this;
+        // 2. Your app get re-rendered on any state change
         freezer.on('update', function(){ me.forceUpdate() });
     }
 });
 ```
-
-Freezer can be used along with any Flux library, but it is also possible to *use it in a Flux-like way without any framework*.
+You can use freezer's update methods in your components, or *use it in a Flux-like way without any framework*.
 
 Instead of calling actions we can trigger custom events, thanks to the open event system built in Freezer. Those events accept any number of parameters.
 
 ```js
 // State is the Freezer object
-State.trigger('products:addToCart', product, cart);
+freezer.trigger('products:addToCart', product, cart);
 ```
 
 A dispatcher is not needed either, you can listen to those events directly in the Freezer object.
 
 ```js
-State.on('products:addToCart', function (product, cart) {
+freezer.on('products:addToCart', function (product, cart) {
     // Update the app state here...
 });
 ```

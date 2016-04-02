@@ -178,4 +178,13 @@ describe("Freezer events test", function(){
 		freezer.getData().b.set('foo', 'bar');
 	});
 
+
+	it( "Trigger should return calback return value", function( done ){
+		freezer.on('whatever', function(){
+			return 'ok';
+		});
+
+		assert.equal(freezer.trigger('whatever'), 'ok');
+	});
+
 });

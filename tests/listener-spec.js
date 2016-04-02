@@ -471,4 +471,39 @@ describe("Freezer events test", function(){
 			done();
 		}, 250);
 	});
+
+
+	it( "Trigger should return callback return value", function(){
+		freezer.on('whatever', function(){
+			return 'ok';
+		});
+
+		assert.equal(freezer.trigger('whatever'), 'ok');
+	});
+
+	it( "Trigger should return last callback's return value", function(){
+		freezer
+			.on('whatever', function(){
+				return 'no';
+			})
+			.on('whatever', function(){
+				return 'ok';
+			})
+		;
+
+		assert.equal(freezer.trigger('whatever'), 'ok');
+	});
+	
+	it( "Trigger shouldn't return callback's undefined values", function(){
+		freezer
+			.on('whatever', function(){
+				return 'ok';
+			})
+			.on('whatever', function(){
+				// This doesn't return anything
+			})
+		;
+
+		assert.equal(freezer.trigger('whatever'), 'ok');
+	});
 });
