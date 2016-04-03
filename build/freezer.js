@@ -1,4 +1,4 @@
-/* freezer-js v0.10.0 (3-3-2016)
+/* freezer-js v0.11.0 (3-4-2016)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -169,9 +169,12 @@ var Utils = {
   		return found;
   },
 
-	isLeaf: function( node ){
-		var cons = node && node.constructor;
-		return !cons || cons == String || cons == Number || cons == Boolean;
+	isLeaf: function( node, freezeInstances ){
+		var cons;
+		return !node || !(cons = node.constructor) || (freezeInstances ?
+			(cons === String || cons === Number || cons === Boolean) :
+			(cons != Object && cons != Array)
+		);
 	}
 };
 
@@ -340,8 +343,8 @@ var nodeCreator = {
 				if( cons === Object ){
 					return Object.create( FrozenObject );
 				}
+				// Class instances
 				else {
-					console.log('instance');
 					return Object.create( cons.prototype, objectMethods );
 				}
 			}
@@ -398,7 +401,7 @@ var emitterProto = {
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
 			special = specialEvents.indexOf( eventName ) != -1,
-			i, listener
+			i, listener, returnValue, lastValue
 		;
 
 		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
@@ -408,7 +411,7 @@ var emitterProto = {
 			listener = listeners[i];
 
 			if( listener.callback )
-				listener.callback.apply( this, args );
+				lastValue = listener.callback.apply( this, args );
 			else {
 				// If there is not a callback, remove!
 				listener.once = true;
@@ -416,6 +419,10 @@ var emitterProto = {
 
 			if( listener.once )
 				onceListeners.push( i );
+
+			if( lastValue !== undefined ){
+				returnValue = lastValue;
+			}
 		}
 
 		// Remove listeners marked as once
@@ -425,7 +432,7 @@ var emitterProto = {
 
 		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
 
-		return this;
+		return returnValue;
 	}
 };
 
@@ -452,7 +459,7 @@ var Frozen = {
 
 		// Freeze children
 		Utils.each( node, function( child, key ){
-			if( !Utils.isLeaf( child ) ){
+			if( !Utils.isLeaf( child, store.freezeInstances ) ){
 				child = me.freeze( child, store );
 			}
 
@@ -502,7 +509,7 @@ var Frozen = {
 				return frozen[ key ] = child;
 			}
 
-			if( !Utils.isLeaf( val ) )
+			if( !Utils.isLeaf( val, store.freezeInstances ) )
 				val = me.freeze( val, store );
 
 			if( val && val.__ )
@@ -517,7 +524,7 @@ var Frozen = {
 		for( key in attrs ) {
 			val = attrs[ key ];
 
-			if( !Utils.isLeaf( val ) )
+			if( !Utils.isLeaf( val, store.freezeInstances ) )
 				val = me.freeze( val, store );
 
 			if( val && val.__ )
@@ -539,7 +546,7 @@ var Frozen = {
 			frozen = replacement
 		;
 
-		if( !Utils.isLeaf( replacement ) ) {
+		if( !Utils.isLeaf( replacement, _.store.freezeInstances ) ) {
 
 			frozen = me.freeze( replacement, _.store );
 			frozen.__.parents = _.parents;
@@ -630,7 +637,7 @@ var Frozen = {
 			for (var i = args.length - 1; i >= 2; i--) {
 				child = args[i];
 
-				if( !Utils.isLeaf( child ) )
+				if( !Utils.isLeaf( child, _.store.freezeInstances ) )
 					child = this.freeze( child, _.store );
 
 				if( child && child.__ )
@@ -890,7 +897,8 @@ var Freezer = function( initialValue, options ) {
 	var me = this,
 		ops = options || {},
 		store = {
-			live: ops.live || false
+			live: ops.live || false,
+			freezeInstances: ops.freezeInstances || false
 		}
 	;
 
@@ -978,7 +986,6 @@ var Freezer = function( initialValue, options ) {
 			return frozen;
 		},
 		set: function( node ){
-			console.log('setting');
 			frozen.reset( node );
 		},
 		getEventHub: function(){

@@ -10,7 +10,8 @@ var Freezer = function( initialValue, options ) {
 	var me = this,
 		ops = options || {},
 		store = {
-			live: ops.live || false
+			live: ops.live || false,
+			freezeInstances: ops.freezeInstances || false
 		}
 	;
 
@@ -98,7 +99,6 @@ var Freezer = function( initialValue, options ) {
 			return frozen;
 		},
 		set: function( node ){
-			console.log('setting');
 			frozen.reset( node );
 		},
 		getEventHub: function(){

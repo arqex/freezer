@@ -1,4 +1,11 @@
 # Freezer Changelog
+###v0.11.0
+* Removes console.log calls
+* Trigger an event now return the last callback return value that is not `undefined`.
+* Now class instances are handled like tree leaves.
+* Adds the freezeInstance options to handle class instances as freezer nodes.
+
+
 ###v0.10.0
 * Fixes not returning the pivot on non-modifying updates. Thanks @oigewan
 * Adds `getEventHub` method.

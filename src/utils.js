@@ -156,9 +156,12 @@ var Utils = {
   		return found;
   },
 
-	isLeaf: function( node ){
-		var cons = node && node.constructor;
-		return !cons || cons == String || cons == Number || cons == Boolean;
+	isLeaf: function( node, freezeInstances ){
+		var cons;
+		return !node || !(cons = node.constructor) || (freezeInstances ?
+			(cons === String || cons === Number || cons === Boolean) :
+			(cons != Object && cons != Array)
+		);
 	}
 };
 //#build

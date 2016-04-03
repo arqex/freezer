@@ -24,7 +24,7 @@ var Frozen = {
 
 		// Freeze children
 		Utils.each( node, function( child, key ){
-			if( !Utils.isLeaf( child ) ){
+			if( !Utils.isLeaf( child, store.freezeInstances ) ){
 				child = me.freeze( child, store );
 			}
 
@@ -74,7 +74,7 @@ var Frozen = {
 				return frozen[ key ] = child;
 			}
 
-			if( !Utils.isLeaf( val ) )
+			if( !Utils.isLeaf( val, store.freezeInstances ) )
 				val = me.freeze( val, store );
 
 			if( val && val.__ )
@@ -89,7 +89,7 @@ var Frozen = {
 		for( key in attrs ) {
 			val = attrs[ key ];
 
-			if( !Utils.isLeaf( val ) )
+			if( !Utils.isLeaf( val, store.freezeInstances ) )
 				val = me.freeze( val, store );
 
 			if( val && val.__ )
@@ -111,7 +111,7 @@ var Frozen = {
 			frozen = replacement
 		;
 
-		if( !Utils.isLeaf( replacement ) ) {
+		if( !Utils.isLeaf( replacement, _.store.freezeInstances ) ) {
 
 			frozen = me.freeze( replacement, _.store );
 			frozen.__.parents = _.parents;
@@ -202,7 +202,7 @@ var Frozen = {
 			for (var i = args.length - 1; i >= 2; i--) {
 				child = args[i];
 
-				if( !Utils.isLeaf( child ) )
+				if( !Utils.isLeaf( child, _.store.freezeInstances ) )
 					child = this.freeze( child, _.store );
 
 				if( child && child.__ )

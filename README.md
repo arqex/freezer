@@ -190,10 +190,9 @@ var freezer = new Freezer({hi: 'hello'}, {mutable: true, live:true});
 | ------------ | ------- | ------- | ----------- |
 | **mutable** | boolean | `false` | Once you get used to freezer, you can see that immutability is not necessary if you learn that you shouldn't update the data directly. In that case, disable immutability in the case that you need a small performance boost. |
 | **live** | boolean | `false` | With live mode on, freezer triggers the update events just when the changes happen, instead of batching all the changes and triggering the event on the next tick. This is useful if you want freezer to store input field values. |
+| **freezeInstances** | boolean | `false` | It's possible to store class instances in freezer. They are handled like strings or numbers, added to the state like non-frozen leaves. Keep in mind that if their internal state changes, freezer won't `trigger` any update event. If you want freezer to handle them as freezer nodes, set 'freezerInstances: true'. They will be frozen and you will be able to update their attributes using freezer methods, but remember that any instance method that update its internal state may fail (the instance is frozen) and wouldn't trigger any `update` event. |
 
 And then, Freezer's API is really simple and only has 2 methods: `get` and `set`. A freezer object also implements the [listener API](#listener-api).
-
-
 
 #### get()
 
@@ -258,8 +257,6 @@ console.log( freezer.get() );
 ```
 
 Both *Array* and *Object* nodes have a `set` method to update or add elements to the node and a `reset` method to replace the node with other data.
-
-Class instances can be stored in a freezer store. They will be handled like objects but its methods will be preserved. Since the instance will be frozen, instance setter methods could be not working for update the object.
 
 #### set( keyOrObject, value )
 Arrays and hashes can update their children using the `set` method. It accepts a hash with the keys and values to update or two arguments: the key and the value.
@@ -422,7 +419,19 @@ Register a function to be called once when an event occurs. After being called t
 #### off( eventName, callback )
 Can unregister all callbacks from a listener if the `eventName` parameter is omitted, or all the callbacks for a `eventName` if the `callback` parameter is omitted.
 #### trigger( eventName [, param, param, ...] )
-Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks.
+Trigger an event on the listener. All the extra parameters will be passed to the registered callbacks. `trigger` returns the return value of the latest callback that doesn't return `undefined`.
+```
+freezer
+  .on('whatever', function(){
+    return 'ok';
+  })  
+  .on('whatever', function(){
+    // This doesn't return anything
+  })
+;
+
+console.log(freezer.trigger('whatever')); // logs 'ok'
+```
 
 ### Event hooks
 Freezer objects and nodes also emit `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the triggered event in the arguments.

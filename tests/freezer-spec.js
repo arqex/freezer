@@ -390,9 +390,9 @@ describe("Freezer test", function(){
 		assert.strictEqual(pivotNode.a.b.c.test, 2);
 	});
 
-	it('Preserve instance methods', function(){
+	it('freezeInstances: Preserve instance methods', function(){
 		var MyClass = function(){ console.log('oh my') },
-			freezer = new Freezer({})
+			freezer = new Freezer({}, {freezeInstances: true})
 		;
 
 		MyClass.prototype.sayHello = function() { return 'Hello' };
@@ -405,6 +405,21 @@ describe("Freezer test", function(){
 		freezer.get().instance.set({a:2});
 		assert.equal(freezer.get().instance.a, 2);
 		assert.equal(freezer.get().instance.sayHello(), 'Hello');
-	})
+	});
+
+	it('Class instances are leaves', function(){
+		var MyClass = function(){ this.attr = 2; };
+		MyClass.prototype.sayHello = function() { return 'Hello' };
+		var instance = new MyClass();
+
+
+		freezer.get().set({instance: instance});
+		assert.equal( freezer.get().instance, instance );
+		instance.attr = 4;
+		assert.equal( freezer.get().instance.attr, 4);
+		freezer.get().set({a: {attr: 1}});
+		assert.equal( freezer.get().a.attr, 1 );
+		assert.equal( freezer.get().instance, instance );
+	});
 
 });

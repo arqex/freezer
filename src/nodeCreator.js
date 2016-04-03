@@ -168,8 +168,8 @@ var nodeCreator = {
 				if( cons === Object ){
 					return Object.create( FrozenObject );
 				}
+				// Class instances
 				else {
-					console.log('instance');
 					return Object.create( cons.prototype, objectMethods );
 				}
 			}
