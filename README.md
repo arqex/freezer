@@ -8,7 +8,7 @@ A tree data structure that emits events on updates, even if the modification is 
 
 Are you looking for an immutable.js alternative? Freezer is made with React.js in mind and it uses real immutable structures. It is the perfect store for you application.
 
-Using freezer you don't need a flux framework, just listen to its `update` events to refresh your UI. [Goodbye boilerplate code!](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
+Using freezer you don't even need a flux framework, just listen to its `update` events to refresh your UI. [Goodbye boilerplate code!](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 
 What makes Freezer special is:
 
@@ -71,8 +71,10 @@ var freezer = new Freezer({
 var state = freezer.get();
 
 // Listen to changes in the state
-freezer.on('update', function( newValue ){
-    // New value will have the new state for your app
+freezer.on('update', function( currentState, prevState ){
+    // currentState will have the new state for your app
+    // prevState contains the old state, in case you need
+    // to do some comparisons
     console.log( 'I was updated' );
 });
 
@@ -334,7 +336,7 @@ Using `now` in a node triggers the `update` method immediately.
 ```js
 var freezer = new Freezer({ test: 'hola' });
 
-freezer.on('update', function( update ){
+freezer.on('update', function( currentState, prevState ){
     console.log('event');
 });
 
@@ -401,12 +403,12 @@ var freezer = new Freezer({ arr: [2] }),
     listener = state.arr.getListener()
 ;
 
-listener.on('update', function( newState ){
+listener.on('update', function( state, prevState ){
     console.log( 'Updated!' );
-    console.log( newState );
+    console.log( state, prevState );
 });
 
-state.arr.push( 3 ); //logs 'Updated!' [2,3]
+state.arr.push( 3 ); //logs 'Updated!' [2,3] [2]
 ```
 
 ## Listener API
@@ -441,10 +443,26 @@ Store.on('beforeAll', function( eventName, arg1, arg2 ){
     console.log( event, arg1, arg2 );
 });
 
-Store.get().set({a: 2}); // Will log 'update', {a:2}, undefined
+Store.get().set({a: 2}); // Will log 'update', {a:2}, {a:1}
 Store.trigger('add', 4, 5); // Will log 'add', 4, 5
 ```
 This is a nice way of binding [reactions](#usage-with-react) to more than one type of event.
+It is possible to add some changes to the state inside the `beforeAll` event, so they will be available for the `update` event handlers.
+
+```js
+var Store = new Freezer({a: 1});
+Store.on('beforeAll', function( eventName, arg1, arg2 ){
+  if( eventName === 'update' && arg1.a === 2 ){
+    arg1.set({message: 'You changed a to be 2!'});
+  }
+});
+
+Store.on('update', function( state ){
+  console.log( state.message );
+});
+
+Store.get().set({a: 2}); // Logs 'You changed a to be 2!'
+```
 
 ## Batch updates
 At some point you will find yourself wanting to apply multiple changes at a time. The full tree is re-generated on each change, but the only tree you probably need is the final result of all those changes.

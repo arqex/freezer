@@ -22,8 +22,11 @@ var Freezer = function( initialValue, options ) {
 		var _ = node.__,
 			i
 		;
+
 		if( _.listener ){
-			Frozen.trigger( node, 'update', 0, true );
+			var prevState = _.listener.prevState || node;
+			_.listener.prevState = 0;
+			Frozen.trigger( prevState, 'update', node, true );
 		}
 
 		for (i = 0; i < _.parents.length; i++) {

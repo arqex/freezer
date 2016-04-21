@@ -382,7 +382,7 @@ var Frozen = {
 			oldChild.__.updateRoot( oldChild, newChild );
 		}
 		if( newChild ){
-			this.trigger( newChild, 'update', newChild, _.store.live );
+			this.trigger( oldChild, 'update', newChild, _.store.live );
 		}
 		if( parents ){
 			for (i = parents - 1; i >= 0; i--) {
@@ -421,18 +421,27 @@ var Frozen = {
 		if( now ){
 			if( ticking || param ){
 				listener.ticking = 0;
-				listener.trigger( eventName, ticking || param );
+				listener.trigger( eventName, ticking || param, node );
 			}
 			return;
 		}
 
 		listener.ticking = param;
+		if( !listener.prevState ){
+			listener.prevState = node;
+		}
+
 		if( !ticking ){
 			Utils.nextTick( function(){
 				if( listener.ticking ){
-					var updated = listener.ticking;
+					var updated = listener.ticking,
+						prevState = listener.prevState
+					;
+
 					listener.ticking = 0;
-					listener.trigger( eventName, updated );
+					listener.prevState = 0;
+
+					listener.trigger( eventName, updated, node );
 				}
 			});
 		}

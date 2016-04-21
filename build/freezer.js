@@ -1,4 +1,4 @@
-/* freezer-js v0.11.0 (3-4-2016)
+/* freezer-js v0.11.1 (5-4-2016)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -817,7 +817,7 @@ var Frozen = {
 			oldChild.__.updateRoot( oldChild, newChild );
 		}
 		if( newChild ){
-			this.trigger( newChild, 'update', newChild, _.store.live );
+			this.trigger( oldChild, 'update', newChild, _.store.live );
 		}
 		if( parents ){
 			for (i = parents - 1; i >= 0; i--) {
@@ -856,18 +856,27 @@ var Frozen = {
 		if( now ){
 			if( ticking || param ){
 				listener.ticking = 0;
-				listener.trigger( eventName, ticking || param );
+				listener.trigger( eventName, ticking || param, node );
 			}
 			return;
 		}
 
 		listener.ticking = param;
+		if( !listener.prevState ){
+			listener.prevState = node;
+		}
+
 		if( !ticking ){
 			Utils.nextTick( function(){
 				if( listener.ticking ){
-					var updated = listener.ticking;
+					var updated = listener.ticking,
+						prevState = listener.prevState
+					;
+
 					listener.ticking = 0;
-					listener.trigger( eventName, updated );
+					listener.prevState = 0;
+
+					listener.trigger( eventName, updated, node );
 				}
 			});
 		}
@@ -909,8 +918,11 @@ var Freezer = function( initialValue, options ) {
 		var _ = node.__,
 			i
 		;
+
 		if( _.listener ){
-			Frozen.trigger( node, 'update', 0, true );
+			var prevState = _.listener.prevState || node;
+			_.listener.prevState = 0;
+			Frozen.trigger( prevState, 'update', node, true );
 		}
 
 		for (i = 0; i < _.parents.length; i++) {

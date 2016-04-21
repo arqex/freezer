@@ -1,4 +1,8 @@
 # Freezer Changelog
+###v0.11.1
+* `update` event handlers now receive the previous state.
+
+
 ###v0.11.0
 * Removes console.log calls
 * Trigger an event now return the last callback return value that is not `undefined`.

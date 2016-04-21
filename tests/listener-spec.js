@@ -34,14 +34,24 @@ describe("Freezer events test", function(){
 		;
 
 		listener.on( 'update', function( data ){
-			try {
-				assert.equal( data.c, 3 );
-				assert.equal( freezer.getData().b.c, 3 );
-				done();
-			}
-			catch( e ){
-				console.log( e.stack );
-			}
+			assert.equal( data.c, 3 );
+			assert.equal( freezer.getData().b.c, 3 );
+			done();
+		});
+
+		data.b.set( {c: 3} );
+	});
+
+	it( "Node updates should return the current and previous node.", function( done ){
+		var listener = data.b.getListener(),
+			initialB = data.b,
+			count = 0
+		;
+
+		listener.on( 'update', function( state, prevState ){
+			assert.equal( state, freezer.getData().b );
+			assert.equal( prevState, initialB );
+			done();
 		});
 
 		data.b.set( {c: 3} );
@@ -99,6 +109,26 @@ describe("Freezer events test", function(){
 		freezer.get().b.set( {c: 3} );
 	});
 
+
+		it( "Updates should also return previous node in live mode", function( done ){
+			var freezer = new Freezer( example, { live: true } ),
+				listener = freezer.get().b.getListener(),
+				count = 0
+			;
+
+			freezer.getEventHub().on( 'update', function( data, prev ){
+				if( ++count == 3 ){
+					assert.equal( data.b.c, 3 );
+					assert.equal( prevB, prev.b );
+					done();
+				}
+			});
+
+			freezer.get().b.set( {c: 1} );
+			var prevB = freezer.get().b.set( {c: 2} );
+			freezer.get().b.set( {c: 3} );
+		});
+
 	it( "Live mode should trigger in all parents synchronously.", function(){
 		var freezer = new Freezer( example, { live: true } ),
 			data = freezer.get(),
@@ -123,6 +153,17 @@ describe("Freezer events test", function(){
 
 		freezer.getEventHub().on( 'update', function(){
 			assert.equal( freezer.getData().b.c, 3 );
+			done();
+		});
+
+		data.b.set( {c: 3} );
+	});
+
+
+	it( "Update events should return new and old nodes", function( done ){
+		freezer.getEventHub().on( 'update', function( state, prevState ){
+			assert.equal( freezer.getData(), state );
+			assert.equal( data, prevState );
 			done();
 		});
 
@@ -306,11 +347,13 @@ describe("Freezer events test", function(){
 	it( "Now is synchronous", function(){
 		var triggered = 0;
 
-		var handler = function( update ){
+		var handler = function( update, prevState ){
 			assert.equal( update.a, 2 );
 			assert.equal( freezer.get().a, 2 );
+			assert.equal( data, prevState );
 			triggered++;
 		};
+
 		freezer.getEventHub().on( 'update', handler );
 		freezer.get().set({a:2}).now();
 		freezer.getEventHub().off( 'update', handler );
@@ -406,12 +449,14 @@ describe("Freezer events test", function(){
 			.on('update', function(){
 				out += ' event ';
 			})
-			.on('beforeAll', function( eventName, update ){
+			.on('beforeAll', function( eventName, update, prevState ){
 				assert.equal( update.a, 10 );
+				assert.equal( prevState, data );
 				out = eventName;
 			})
-			.on('afterAll', function( eventName, update ){
+			.on('afterAll', function( eventName, update, prevState ){
 				assert.equal( update.a, 10 );
+				assert.equal( prevState, data );
 				out += eventName;
 			})
 		;
@@ -420,31 +465,6 @@ describe("Freezer events test", function(){
 
 		setTimeout( function(){
 			assert.equal( out, 'update event update' );
-			done();
-		}, 150 );
-	});
-
-
-	it("beforeAll afterAll aren't triggered at immediate", function( done ){
-		var out = '';
-		freezer
-			.on('immediate', function(){
-				out += ' event ';
-			})
-			.on('beforeAll', function( eventName, update ){
-				assert.equal( update.a, 10 );
-				out = eventName;
-			})
-			.on('afterAll', function( eventName, update ){
-				assert.equal( update.a, 10 );
-				out += eventName;
-			})
-		;
-
-		data.set({a:10});
-
-		setTimeout( function(){
-			assert.equal( out, 'updateupdate' );
 			done();
 		}, 150 );
 	});
@@ -493,7 +513,7 @@ describe("Freezer events test", function(){
 
 		assert.equal(freezer.trigger('whatever'), 'ok');
 	});
-	
+
 	it( "Trigger shouldn't return callback's undefined values", function(){
 		freezer
 			.on('whatever', function(){
