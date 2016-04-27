@@ -150,7 +150,7 @@ var Frozen = {
 				me.removeParent( child, node );
 			}
 
-			if( attrs.indexOf( key ) != -1 ){
+			if( attrs.indexOf( key ) !== -1 ){
 				return;
 			}
 
@@ -230,7 +230,7 @@ var Frozen = {
 		if( transacting )
 			return transacting;
 
-		trans = node.constructor == Array ? [] : {};
+		trans = node.constructor === Array ? [] : {};
 
 		Utils.each( node, function( child, key ){
 			trans[ key ] = child;
@@ -335,13 +335,13 @@ var Frozen = {
 
 			// If the child is linked to the node,
 			// maybe its children are not linked
-			if( child.__.parents.indexOf( node ) != -1 )
+			if( child.__.parents.indexOf( node ) !== -1 )
 				return me.fixChildren( child );
 
 			// If the child wasn't linked it is sure
 			// that it wasn't modified. Just link it
 			// to the new parent
-			if( child.__.parents.length == 1 )
+			if( child.__.parents.length === 1 )
 				return child.__.parents = [ node ];
 
 			if( oldNode )
@@ -396,7 +396,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index != -1 ){
+		if( index !== -1 ){
 			parents.splice( index, 1 );
 		}
 	},
@@ -406,7 +406,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index == -1 ){
+		if( index === -1 ){
 			parents[ parents.length ] = parent;
 		}
 	},
