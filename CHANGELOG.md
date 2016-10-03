@@ -1,7 +1,9 @@
 # Freezer Changelog
+###v0.11.2
+* Fixes deep children losing the parent reference on resetting the state.
+
 ###v0.11.1
 * `update` event handlers now receive the previous state.
-
 
 ###v0.11.0
 * Removes console.log calls
