@@ -422,4 +422,16 @@ describe("Freezer test", function(){
 		assert.equal( freezer.get().instance, instance );
 	});
 
+	it('Deep child should update their parents on state set', function(){
+		var d = freezer.get(); // Save state for later
+		freezer.get().set({a:2});
+		freezer.get().b.set({z:1});
+		freezer.set( d );
+		freezer.get().b.x.set(0,'z');
+
+		assert.equal( freezer.get().a, 1 );
+		assert.equal( freezer.get().b.z, 0 );
+		assert.equal( freezer.get().b.x[0], 'z' );
+	});
+
 });
