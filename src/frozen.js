@@ -333,14 +333,10 @@ var Frozen = {
 			if( !child || !child.__ )
 				return;
 
-			// If the child is linked to the node,
-			// maybe its children are not linked
-			if( child.__.parents.indexOf( node ) != -1 )
-				return me.fixChildren( child );
+			// Update parents in all children no matter the child
+			// is linked to the node or not.
+			me.fixChildren( child );
 
-			// If the child wasn't linked it is sure
-			// that it wasn't modified. Just link it
-			// to the new parent
 			if( child.__.parents.length == 1 )
 				return child.__.parents = [ node ];
 
