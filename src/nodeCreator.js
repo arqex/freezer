@@ -9,17 +9,29 @@ var nodeCreator = {
 		var commonMethods = {
 			set: function( attr, value ){
 				var attrs = attr,
-					update = this.__.trans
+					update = this.__.trans,
+					isArray = this.constructor === Array,
+					msg = 'Freezer arrays only accept numeric attributes, given: '
 				;
 
 				if( typeof attr !== 'object' ){
+					if( isArray && parseInt(attr) != attr ){
+						Utils.warn( 0, msg + attr );
+						return Utils.findPivot( this ) || this;
+					}
 					attrs = {};
 					attrs[ attr ] = value;
 				}
 
 				if( !update ){
 					for( var key in attrs ){
-						update = update || this[ key ] !== attrs[ key ];
+						if( isArray && parseInt(key) != key ){
+							Utils.warn( 0, msg + key );
+							return Utils.findPivot( this ) || this;
+						}
+						else {
+							update = update || this[ key ] !== attrs[ key ];
+						}
 					}
 
 					// No changes, just return the node

@@ -3,6 +3,7 @@
 if( typeof Freezer == 'undefined' ){
 	var Freezer = require( '../freezer.js' );
 	var assert = require('assert');
+	var utils = require('../src/utils');
 }
 
 var freezer, data;
@@ -433,5 +434,4 @@ describe("Freezer test", function(){
 		assert.equal( freezer.get().b.z, 0 );
 		assert.equal( freezer.get().b.x[0], 'z' );
 	});
-
 });

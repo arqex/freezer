@@ -168,6 +168,14 @@ var Utils = {
 			(cons === String || cons === Number || cons === Boolean) :
 			(cons !== Object && cons !== Array)
 		);
+	},
+
+	warn: function( condition, msg ){
+		if( typeof process === 'undefined' || process.env.NODE_ENV !== 'production' ){
+			if( !condition && typeof console !== 'undefined' ){
+				console.warn( 'Freezer.js WARNING: ' + msg );
+			}
+		}
 	}
 };
 //#build

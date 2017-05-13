@@ -154,4 +154,15 @@ describe("Freezer array test", function(){
 		assert.deepEqual( freezer.get().c, undefined );
 	});
 
+	it( "Can't set string attributes in an array", function(){
+		var arr = data.c;
+		var update = arr.set("foo", "bar");
+		assert.equal( arr, update );
+
+		update = arr.set({1:'hola', foo: 'bar'});
+
+		assert.equal( update[1], 2 );
+		assert.equal( update.foo, undefined );
+	});
+
 });

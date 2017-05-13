@@ -181,6 +181,14 @@ var Utils = {
 			(cons === String || cons === Number || cons === Boolean) :
 			(cons !== Object && cons !== Array)
 		);
+	},
+
+	warn: function( condition, msg ){
+		if( typeof process === 'undefined' || process.env.NODE_ENV !== 'production' ){
+			if( !condition && typeof console !== 'undefined' ){
+				console.warn( 'Freezer.js WARNING: ' + msg );
+			}
+		}
 	}
 };
 
@@ -190,17 +198,27 @@ var nodeCreator = {
 		var commonMethods = {
 			set: function( attr, value ){
 				var attrs = attr,
-					update = this.__.trans
+					update = this.__.trans,
+					isArray = this.constructor === Array
 				;
 
 				if( typeof attr !== 'object' ){
+					if( isArray && parseInt(attr) != attr ){
+						Utils.warn( true, 'Freezer arrays only accept numeric attributes, given: ' + attr );
+						return Utils.findPivot( this ) || this;
+					}
 					attrs = {};
 					attrs[ attr ] = value;
 				}
 
 				if( !update ){
 					for( var key in attrs ){
-						update = update || this[ key ] !== attrs[ key ];
+						if( isArray && parseInt(key) != key ){
+							Utils.warn( true, 'Freezer arrays only accept numeric attributes, given: ' + key );
+						}
+						else {
+							update = update || this[ key ] !== attrs[ key ];
+						}
 					}
 
 					// No changes, just return the node
