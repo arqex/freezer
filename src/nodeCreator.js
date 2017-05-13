@@ -12,7 +12,7 @@ var nodeCreator = {
 					update = this.__.trans
 				;
 
-				if( typeof attr != 'object' ){
+				if( typeof attr !== 'object' ){
 					attrs = {};
 					attrs[ attr ] = value;
 				}
@@ -40,7 +40,7 @@ var nodeCreator = {
 
 			toJS: function(){
 				var js;
-				if( this.constructor == Array ){
+				if( this.constructor === Array ){
 					js = new Array( this.length );
 				}
 				else {
@@ -122,7 +122,7 @@ var nodeCreator = {
 					k = keys
 				;
 
-				if( keys.constructor != Array )
+				if( keys.constructor !== Array )
 					k = [ keys ];
 
 				for( var i = 0, l = k.length; i<l; i++ ){
@@ -161,7 +161,7 @@ var nodeCreator = {
 
 		this.clone = function( node ){
 			var cons = node.constructor;
-			if( cons == Array ){
+			if( cons === Array ){
 				return createArray( node.length );
 			}
 			else {

@@ -1,4 +1,4 @@
-/* freezer-js v0.11.2 (3-10-2016)
+/* freezer-js v0.12.0 (13-5-2017)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -14,7 +14,13 @@
 }(this, function() {
 	'use strict';
 	
-var global = (new Function("return this")());
+var global = typeof global !== 'undefined' ?
+	global :
+	typeof self !== 'undefined' ?
+		self :
+		typeof window !== 'undefined' ?
+			window :
+			{};
 
 var Utils = {
 	extend: function( ob, props ){
@@ -41,7 +47,7 @@ var Utils = {
 
 	each: function( o, clbk ){
 		var i,l,keys;
-		if( o && o.constructor == Array ){
+		if( o && o.constructor === Array ){
 			for (i = 0, l = o.length; i < l; i++)
 				clbk( o[i], i );
 		}
@@ -88,7 +94,7 @@ var Utils = {
     var queue = [],
 		dirty = false,
 		fn,
-		hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
+		hasPostMessage = !!global.postMessage && (typeof Window !== 'undefined') && (global instanceof Window),
 		messageName = 'nexttick',
 		trigger = (function () {
 			return hasPostMessage
@@ -173,7 +179,7 @@ var Utils = {
 		var cons;
 		return !node || !(cons = node.constructor) || (freezeInstances ?
 			(cons === String || cons === Number || cons === Boolean) :
-			(cons != Object && cons != Array)
+			(cons !== Object && cons !== Array)
 		);
 	}
 };
@@ -187,7 +193,7 @@ var nodeCreator = {
 					update = this.__.trans
 				;
 
-				if( typeof attr != 'object' ){
+				if( typeof attr !== 'object' ){
 					attrs = {};
 					attrs[ attr ] = value;
 				}
@@ -215,7 +221,7 @@ var nodeCreator = {
 
 			toJS: function(){
 				var js;
-				if( this.constructor == Array ){
+				if( this.constructor === Array ){
 					js = new Array( this.length );
 				}
 				else {
@@ -297,7 +303,7 @@ var nodeCreator = {
 					k = keys
 				;
 
-				if( keys.constructor != Array )
+				if( keys.constructor !== Array )
 					k = [ keys ];
 
 				for( var i = 0, l = k.length; i<l; i++ ){
@@ -336,7 +342,7 @@ var nodeCreator = {
 
 		this.clone = function( node ){
 			var cons = node.constructor;
-			if( cons == Array ){
+			if( cons === Array ){
 				return createArray( node.length );
 			}
 			else {
@@ -376,10 +382,10 @@ var emitterProto = {
 	},
 
 	off: function( eventName, listener ){
-		if( typeof eventName == 'undefined' ){
+		if( typeof eventName === 'undefined' ){
 			this._events = {};
 		}
-		else if( typeof listener == 'undefined' ) {
+		else if( typeof listener === 'undefined' ) {
 			this._events[ eventName ] = [];
 		}
 		else {
@@ -400,7 +406,7 @@ var emitterProto = {
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
-			special = specialEvents.indexOf( eventName ) != -1,
+			special = specialEvents.indexOf( eventName ) !== -1,
 			i, listener, returnValue, lastValue
 		;
 
@@ -585,7 +591,7 @@ var Frozen = {
 				me.removeParent( child, node );
 			}
 
-			if( attrs.indexOf( key ) != -1 ){
+			if( attrs.indexOf( key ) !== -1 ){
 				return;
 			}
 
@@ -665,7 +671,7 @@ var Frozen = {
 		if( transacting )
 			return transacting;
 
-		trans = node.constructor == Array ? [] : {};
+		trans = node.constructor === Array ? [] : {};
 
 		Utils.each( node, function( child, key ){
 			trans[ key ] = child;
@@ -772,7 +778,7 @@ var Frozen = {
 			// is linked to the node or not.
 			me.fixChildren( child );
 
-			if( child.__.parents.length == 1 )
+			if( child.__.parents.length === 1 )
 				return child.__.parents = [ node ];
 
 			if( oldNode )
@@ -827,7 +833,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index != -1 ){
+		if( index !== -1 ){
 			parents.splice( index, 1 );
 		}
 	},
@@ -837,7 +843,7 @@ var Frozen = {
 			index = parents.indexOf( parent )
 		;
 
-		if( index == -1 ){
+		if( index === -1 ){
 			parents[ parents.length ] = parent;
 		}
 	},
@@ -938,7 +944,7 @@ var Freezer = function( initialValue, options ) {
 	};
 
 	store.notify = function notify( eventName, node, options ){
-		if( eventName == 'now' ){
+		if( eventName === 'now' ){
 			if( pivotTriggers.length ){
 				while( pivotTriggers.length ){
 					triggerNow( pivotTriggers.shift() );
@@ -953,7 +959,7 @@ var Freezer = function( initialValue, options ) {
 
 		var update = Frozen[eventName]( node, options );
 
-		if( eventName != 'pivot' ){
+		if( eventName !== 'pivot' ){
 			var pivot = Utils.findPivot( update );
 			if( pivot ) {
 				addToPivotTriggers( update );

@@ -206,7 +206,7 @@ console.log( freezer.get() );
 The data returned is actually formed by arrays and objects, but they are sealed to prevent their mutation and they have some methods in them to update the store.
 Everytime an update is performed, `get` will return a new frozen object.
 
-#### set( data )
+#### set( data ) & set( key, value )
 
 Replace the current frozen data with new one.
 ```js
@@ -216,7 +216,7 @@ var freezer = new Freezer({a: 'hola', b:[1,2, [3,4,5]], c: false }),
     state = freezer.get()
 ;
 
-var updated = state.set({c: true});
+var updated = state.set({c: true}); // You can also state.set(c, true)
 console.log( updated.c ); // true
 
 // Restore the inital state

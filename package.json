@@ -1,6 +1,6 @@
 {
   "name": "freezer-js",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "A tree data structure that is always updated from the root, making easier to think in a reactive way.",
   "main": "freezer.js",
   "homepage": "https://github.com/arqex/freezer",

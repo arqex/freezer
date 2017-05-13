@@ -29,10 +29,10 @@ var emitterProto = {
 	},
 
 	off: function( eventName, listener ){
-		if( typeof eventName == 'undefined' ){
+		if( typeof eventName === 'undefined' ){
 			this._events = {};
 		}
-		else if( typeof listener == 'undefined' ) {
+		else if( typeof listener === 'undefined' ) {
 			this._events[ eventName ] = [];
 		}
 		else {
@@ -53,7 +53,7 @@ var emitterProto = {
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
-			special = specialEvents.indexOf( eventName ) != -1,
+			special = specialEvents.indexOf( eventName ) !== -1,
 			i, listener, returnValue, lastValue
 		;
 
