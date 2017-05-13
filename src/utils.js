@@ -1,7 +1,13 @@
 'use strict';
 
 //#build
-var global = (new Function("return this")());
+var global = typeof global !== 'undefined' ?
+	global :
+	typeof self !== 'undefined' ?
+		self :
+		typeof window !== 'undefined' ?
+			window :
+			{};
 
 var Utils = {
 	extend: function( ob, props ){
