@@ -23,7 +23,7 @@ Do you want to know more?
 
 * [Demos](#demos)
 * [Installation](#installation)
-* [Example](#example-of-use)
+* [Example](#example)
 * [Motivation](#why-another-state-holder)
 * [Freezer API](#api)
 * [Updating the data](#update-methods)
