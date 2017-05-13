@@ -434,6 +434,19 @@ freezer
 
 console.log(freezer.trigger('whatever')); // logs 'ok'
 ```
+Use `trigger` with promises to return the value of an asynchronous function when it has completed. For instance:
+```
+freezer
+  .on('whatever', function(data){
+    return Ajax.post('/path', data); // This async operation will return a promise
+  })
+;
+
+freezer.trigger('whatever', data)
+  .then((ajax_response) => {
+    // Now you can work with ajax_response, the result of the async operation
+  });
+```
 
 ### Event hooks
 Freezer objects and nodes also emit `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the triggered event in the arguments.
