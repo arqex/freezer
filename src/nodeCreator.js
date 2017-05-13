@@ -39,11 +39,12 @@ var nodeCreator = {
 						return Utils.findPivot( this ) || this;
 				}
 
-				return this.__.store.notify( 'merge', this, attrs );
+				var name = isArray ? 'array.set' : 'object.set';
+				return this.__.store.notify( 'merge', this, attrs, name );
 			},
 
 			reset: function( attrs ) {
-				return this.__.store.notify( 'replace', this, attrs );
+				return this.__.store.notify( 'replace', this, attrs, 'object.replace' );
 			},
 
 			getListener: function(){
@@ -88,12 +89,12 @@ var nodeCreator = {
 
 		var arrayMethods = Utils.extend({
 			push: function( el ){
-				return this.append( [el] );
+				return this.append( [el], 'array.push' );
 			},
 
-			append: function( els ){
+			append: function( els, name ){
 				if( els && els.length )
-					return this.__.store.notify( 'splice', this, [this.length, 0].concat( els ) );
+					return this.__.store.notify( 'splice', this, [this.length, 0].concat( els ), name || 'array.append' );
 				return this;
 			},
 
@@ -101,16 +102,16 @@ var nodeCreator = {
 				if( !this.length )
 					return this;
 
-				return this.__.store.notify( 'splice', this, [this.length -1, 1] );
+				return this.__.store.notify( 'splice', this, [this.length -1, 1], 'array.pop' );
 			},
 
 			unshift: function( el ){
-				return this.prepend( [el] );
+				return this.prepend( [el], 'array.unshift' );
 			},
 
 			prepend: function( els ){
 				if( els && els.length )
-					return this.__.store.notify( 'splice', this, [0, 0].concat( els ) );
+					return this.__.store.notify( 'splice', this, [0, 0].concat( els ), 'array.prepend' );
 				return this;
 			},
 
@@ -118,11 +119,11 @@ var nodeCreator = {
 				if( !this.length )
 					return this;
 
-				return this.__.store.notify( 'splice', this, [0, 1] );
+				return this.__.store.notify( 'splice', this, [0, 1], 'array.shift' );
 			},
 
 			splice: function( index, toRemove, toAdd ){
-				return this.__.store.notify( 'splice', this, arguments );
+				return this.__.store.notify( 'splice', this, arguments, 'array.splice' );
 			}
 		}, commonMethods );
 
@@ -143,7 +144,7 @@ var nodeCreator = {
 				}
 
 				if( filtered.length )
-					return this.__.store.notify( 'remove', this, filtered );
+					return this.__.store.notify( 'remove', this, filtered, 'object.remove' );
 				return this;
 			}
 		}, commonMethods));

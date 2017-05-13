@@ -45,7 +45,13 @@ var Freezer = function( initialValue, options ) {
 		}
 	};
 
-	store.notify = function notify( eventName, node, options ){
+	// Last call to display info about orphan calls
+	var lastCall;
+	store.notify = function notify( eventName, node, options, name ){
+		if( name ){
+			lastCall = {name: name, node: node, options: options};
+		}
+
 		if( eventName === 'now' ){
 			if( pivotTriggers.length ){
 				while( pivotTriggers.length ){
@@ -82,6 +88,9 @@ var Freezer = function( initialValue, options ) {
 	frozen.__.updateRoot = function( prevNode, updated ){
 		if( prevNode === frozen ){
 			frozen = updated;
+		}
+		else if( lastCall ) {
+			Utils.warn( false, 'Method ' + lastCall.name + ' called on a detached node.', lastCall.node, lastCall.options );
 		}
 	}
 

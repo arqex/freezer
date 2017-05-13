@@ -170,10 +170,13 @@ var Utils = {
 		);
 	},
 
-	warn: function( condition, msg ){
+	warn: function(){
+		var args;
 		if( typeof process === 'undefined' || process.env.NODE_ENV !== 'production' ){
-			if( !condition && typeof console !== 'undefined' ){
-				console.warn( 'Freezer.js WARNING: ' + msg );
+			if( !arguments[0] && typeof console !== 'undefined' ){
+				args = Array.prototype.slice.call( arguments, 1 );
+				args[0] = 'Freezer.js WARNING: ' + args[0];
+				console.warn.apply( console, args );
 			}
 		}
 	}
