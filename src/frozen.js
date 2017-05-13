@@ -378,7 +378,7 @@ var Frozen = {
 			oldChild.__.updateRoot( oldChild, newChild );
 		}
 		if( newChild ){
-			this.trigger( oldChild, 'update', newChild, _.store.live );
+			this.emit( oldChild, 'update', newChild, _.store.live );
 		}
 		if( parents ){
 			for (i = parents - 1; i >= 0; i--) {
@@ -407,7 +407,7 @@ var Frozen = {
 		}
 	},
 
-	trigger: function( node, eventName, param, now ){
+	emit: function( node, eventName, param, now ){
 		var listener = node.__.listener;
 		if( !listener )
 			return;
@@ -417,7 +417,7 @@ var Frozen = {
 		if( now ){
 			if( ticking || param ){
 				listener.ticking = 0;
-				listener.trigger( eventName, ticking || param, node );
+				listener.emit( eventName, ticking || param, node );
 			}
 			return;
 		}
@@ -437,7 +437,7 @@ var Frozen = {
 					listener.ticking = 0;
 					listener.prevState = 0;
 
-					listener.trigger( eventName, updated, node );
+					listener.emit( eventName, updated, node );
 				}
 			});
 		}

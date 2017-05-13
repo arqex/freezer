@@ -25,7 +25,7 @@ describe("Freezer events test", function(){
 		assert.notEqual( listener.on, undefined );
 		assert.notEqual( listener.once, undefined );
 		assert.notEqual( listener.off, undefined );
-		assert.notEqual( listener.trigger, undefined );
+		assert.notEqual( listener.emit, undefined );
 	});
 
 	it( "Listen to node updates", function( done ){
@@ -435,7 +435,7 @@ describe("Freezer events test", function(){
 			})
 		;
 
-		freezer.getEventHub().trigger('someEvent', 1, 2);
+		freezer.getEventHub().emit('someEvent', 1, 2);
 
 		setTimeout( function(){
 			assert.equal( out, 'someEvent12 event someEvent12' );
@@ -498,7 +498,7 @@ describe("Freezer events test", function(){
 			return 'ok';
 		});
 
-		assert.equal(freezer.trigger('whatever'), 'ok');
+		assert.equal(freezer.emit('whatever'), 'ok');
 	});
 
 	it( "Trigger should return last callback's return value", function(){
@@ -511,7 +511,7 @@ describe("Freezer events test", function(){
 			})
 		;
 
-		assert.equal(freezer.trigger('whatever'), 'ok');
+		assert.equal(freezer.emit('whatever'), 'ok');
 	});
 
 	it( "Trigger shouldn't return callback's undefined values", function(){
@@ -524,6 +524,6 @@ describe("Freezer events test", function(){
 			})
 		;
 
-		assert.equal(freezer.trigger('whatever'), 'ok');
+		assert.equal(freezer.emit('whatever'), 'ok');
 	});
 });

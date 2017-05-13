@@ -26,7 +26,7 @@ var Freezer = function( initialValue, options ) {
 		if( _.listener ){
 			var prevState = _.listener.prevState || node;
 			_.listener.prevState = 0;
-			Frozen.trigger( prevState, 'update', node, true );
+			Frozen.emit( prevState, 'update', node, true );
 		}
 
 		for (i = 0; i < _.parents.length; i++) {
@@ -99,7 +99,7 @@ var Freezer = function( initialValue, options ) {
 		hub = {}
 	;
 
-	Utils.each(['on', 'off', 'once', 'trigger'], function( method ){
+	Utils.each(['on', 'off', 'once', 'emit'], function( method ){
 		var attrs = {};
 		attrs[ method ] = listener[method].bind(listener);
 		Utils.addNE( me, attrs );

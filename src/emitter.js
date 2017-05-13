@@ -49,7 +49,7 @@ var emitterProto = {
 		return this;
 	},
 
-	trigger: function( eventName ){
+	emit: function( eventName ){
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
@@ -57,7 +57,7 @@ var emitterProto = {
 			i, listener, returnValue, lastValue
 		;
 
-		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
+		special || this.emit.apply( this, [BEFOREALL, eventName].concat( args ) );
 
 		// Call listeners
 		for (i = 0; i < listeners.length; i++) {
@@ -83,9 +83,14 @@ var emitterProto = {
 			listeners.splice( onceListeners[i], 1 );
 		}
 
-		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
+		special || this.emit.apply( this, [AFTERALL, eventName].concat( args ) );
 
 		return returnValue;
+	},
+
+	trigger: function(){
+		Utils.warn( false, 'Method `trigger` is deprecated and will be removed from freezer in upcoming releases. Please use `emit`.' );
+		return this.emit.apply( this, arguments );
 	}
 };
 
