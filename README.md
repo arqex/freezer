@@ -184,6 +184,11 @@ Create a freezer object using the constructor:
 var freezer = new Freezer({a: 'hola', b:[1,2, [3,4,5]], c: false });
 ```
 
+Freezer can be initialized with an object or an array:
+```js
+var arrayStore = new Freezer( [1, 2, {foo: 'bar'}] );
+```
+
 A freezer object can accept options on initialization:
 ```js
 var freezer = new Freezer({hi: 'hello'}, {mutable: true, live:true});
