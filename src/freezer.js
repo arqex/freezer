@@ -46,7 +46,7 @@ var Freezer = function( initialValue, options ) {
 	};
 
 	store.notify = function notify( eventName, node, options ){
-		if( eventName == 'now' ){
+		if( eventName === 'now' ){
 			if( pivotTriggers.length ){
 				while( pivotTriggers.length ){
 					triggerNow( pivotTriggers.shift() );
@@ -61,7 +61,7 @@ var Freezer = function( initialValue, options ) {
 
 		var update = Frozen[eventName]( node, options );
 
-		if( eventName != 'pivot' ){
+		if( eventName !== 'pivot' ){
 			var pivot = Utils.findPivot( update );
 			if( pivot ) {
 				addToPivotTriggers( update );

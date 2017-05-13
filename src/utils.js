@@ -34,7 +34,7 @@ var Utils = {
 
 	each: function( o, clbk ){
 		var i,l,keys;
-		if( o && o.constructor == Array ){
+		if( o && o.constructor === Array ){
 			for (i = 0, l = o.length; i < l; i++)
 				clbk( o[i], i );
 		}
@@ -81,7 +81,7 @@ var Utils = {
     var queue = [],
 		dirty = false,
 		fn,
-		hasPostMessage = !!global.postMessage && (typeof Window != 'undefined') && (global instanceof Window),
+		hasPostMessage = !!global.postMessage && (typeof Window !== 'undefined') && (global instanceof Window),
 		messageName = 'nexttick',
 		trigger = (function () {
 			return hasPostMessage
@@ -166,7 +166,7 @@ var Utils = {
 		var cons;
 		return !node || !(cons = node.constructor) || (freezeInstances ?
 			(cons === String || cons === Number || cons === Boolean) :
-			(cons != Object && cons != Array)
+			(cons !== Object && cons !== Array)
 		);
 	}
 };
