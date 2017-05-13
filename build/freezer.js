@@ -183,14 +183,18 @@ var Utils = {
 		);
 	},
 
-	warn: function( condition, msg ){
+	warn: function(){
+		var args;
 		if( typeof process === 'undefined' || process.env.NODE_ENV !== 'production' ){
-			if( !condition && typeof console !== 'undefined' ){
-				console.warn( 'Freezer.js WARNING: ' + msg );
+			if( !arguments[0] && typeof console !== 'undefined' ){
+				args = Array.prototype.slice.call( arguments, 1 );
+				args[0] = 'Freezer.js WARNING: ' + args[0];
+				console.warn.apply( console, args );
 			}
 		}
 	}
 };
+
 
 var nodeCreator = {
 	init: function( Frozen ){
@@ -199,12 +203,13 @@ var nodeCreator = {
 			set: function( attr, value ){
 				var attrs = attr,
 					update = this.__.trans,
-					isArray = this.constructor === Array
+					isArray = this.constructor === Array,
+					msg = 'Freezer arrays only accept numeric attributes, given: '
 				;
 
 				if( typeof attr !== 'object' ){
 					if( isArray && parseInt(attr) != attr ){
-						Utils.warn( true, 'Freezer arrays only accept numeric attributes, given: ' + attr );
+						Utils.warn( 0, msg + attr );
 						return Utils.findPivot( this ) || this;
 					}
 					attrs = {};
@@ -214,7 +219,8 @@ var nodeCreator = {
 				if( !update ){
 					for( var key in attrs ){
 						if( isArray && parseInt(key) != key ){
-							Utils.warn( true, 'Freezer arrays only accept numeric attributes, given: ' + key );
+							Utils.warn( 0, msg + key );
+							return Utils.findPivot( this ) || this;
 						}
 						else {
 							update = update || this[ key ] !== attrs[ key ];
@@ -226,11 +232,12 @@ var nodeCreator = {
 						return Utils.findPivot( this ) || this;
 				}
 
-				return this.__.store.notify( 'merge', this, attrs );
+				var name = isArray ? 'array.set' : 'object.set';
+				return this.__.store.notify( 'merge', this, attrs, name );
 			},
 
 			reset: function( attrs ) {
-				return this.__.store.notify( 'replace', this, attrs );
+				return this.__.store.notify( 'replace', this, attrs, 'object.replace' );
 			},
 
 			getListener: function(){
@@ -275,12 +282,12 @@ var nodeCreator = {
 
 		var arrayMethods = Utils.extend({
 			push: function( el ){
-				return this.append( [el] );
+				return this.append( [el], 'array.push' );
 			},
 
-			append: function( els ){
+			append: function( els, name ){
 				if( els && els.length )
-					return this.__.store.notify( 'splice', this, [this.length, 0].concat( els ) );
+					return this.__.store.notify( 'splice', this, [this.length, 0].concat( els ), name || 'array.append' );
 				return this;
 			},
 
@@ -288,16 +295,16 @@ var nodeCreator = {
 				if( !this.length )
 					return this;
 
-				return this.__.store.notify( 'splice', this, [this.length -1, 1] );
+				return this.__.store.notify( 'splice', this, [this.length -1, 1], 'array.pop' );
 			},
 
 			unshift: function( el ){
-				return this.prepend( [el] );
+				return this.prepend( [el], 'array.unshift' );
 			},
 
 			prepend: function( els ){
 				if( els && els.length )
-					return this.__.store.notify( 'splice', this, [0, 0].concat( els ) );
+					return this.__.store.notify( 'splice', this, [0, 0].concat( els ), 'array.prepend' );
 				return this;
 			},
 
@@ -305,11 +312,17 @@ var nodeCreator = {
 				if( !this.length )
 					return this;
 
-				return this.__.store.notify( 'splice', this, [0, 1] );
+				return this.__.store.notify( 'splice', this, [0, 1], 'array.shift' );
 			},
 
 			splice: function( index, toRemove, toAdd ){
-				return this.__.store.notify( 'splice', this, arguments );
+				return this.__.store.notify( 'splice', this, arguments, 'array.splice' );
+			},
+
+			sort: function(){
+				var mutable = this.slice();
+				mutable.sort.apply(mutable, arguments);
+				return this.__.store.notify( 'replace', this, mutable, 'array.sort' );
 			}
 		}, commonMethods );
 
@@ -330,7 +343,7 @@ var nodeCreator = {
 				}
 
 				if( filtered.length )
-					return this.__.store.notify( 'remove', this, filtered );
+					return this.__.store.notify( 'remove', this, filtered, 'object.remove' );
 				return this;
 			}
 		}, commonMethods));
@@ -420,7 +433,7 @@ var emitterProto = {
 		return this;
 	},
 
-	trigger: function( eventName ){
+	emit: function( eventName ){
 		var args = [].slice.call( arguments, 1 ),
 			listeners = this._events[ eventName ] || [],
 			onceListeners = [],
@@ -428,7 +441,7 @@ var emitterProto = {
 			i, listener, returnValue, lastValue
 		;
 
-		special || this.trigger.apply( this, [BEFOREALL, eventName].concat( args ) );
+		special || this.emit.apply( this, [BEFOREALL, eventName].concat( args ) );
 
 		// Call listeners
 		for (i = 0; i < listeners.length; i++) {
@@ -454,9 +467,14 @@ var emitterProto = {
 			listeners.splice( onceListeners[i], 1 );
 		}
 
-		special || this.trigger.apply( this, [AFTERALL, eventName].concat( args ) );
+		special || this.emit.apply( this, [AFTERALL, eventName].concat( args ) );
 
 		return returnValue;
+	},
+
+	trigger: function(){
+		Utils.warn( false, 'Method `trigger` is deprecated and will be removed from freezer in upcoming releases. Please use `emit`.' );
+		return this.emit.apply( this, arguments );
 	}
 };
 
@@ -837,7 +855,7 @@ var Frozen = {
 			oldChild.__.updateRoot( oldChild, newChild );
 		}
 		if( newChild ){
-			this.trigger( oldChild, 'update', newChild, _.store.live );
+			this.emit( oldChild, 'update', newChild, _.store.live );
 		}
 		if( parents ){
 			for (i = parents - 1; i >= 0; i--) {
@@ -866,7 +884,7 @@ var Frozen = {
 		}
 	},
 
-	trigger: function( node, eventName, param, now ){
+	emit: function( node, eventName, param, now ){
 		var listener = node.__.listener;
 		if( !listener )
 			return;
@@ -876,7 +894,7 @@ var Frozen = {
 		if( now ){
 			if( ticking || param ){
 				listener.ticking = 0;
-				listener.trigger( eventName, ticking || param, node );
+				listener.emit( eventName, ticking || param, node );
 			}
 			return;
 		}
@@ -896,7 +914,7 @@ var Frozen = {
 					listener.ticking = 0;
 					listener.prevState = 0;
 
-					listener.trigger( eventName, updated, node );
+					listener.emit( eventName, updated, node );
 				}
 			});
 		}
@@ -942,7 +960,7 @@ var Freezer = function( initialValue, options ) {
 		if( _.listener ){
 			var prevState = _.listener.prevState || node;
 			_.listener.prevState = 0;
-			Frozen.trigger( prevState, 'update', node, true );
+			Frozen.emit( prevState, 'update', node, true );
 		}
 
 		for (i = 0; i < _.parents.length; i++) {
@@ -961,7 +979,13 @@ var Freezer = function( initialValue, options ) {
 		}
 	};
 
-	store.notify = function notify( eventName, node, options ){
+	// Last call to display info about orphan calls
+	var lastCall;
+	store.notify = function notify( eventName, node, options, name ){
+		if( name ){
+			lastCall = {name: name, node: node, options: options};
+		}
+
 		if( eventName === 'now' ){
 			if( pivotTriggers.length ){
 				while( pivotTriggers.length ){
@@ -999,6 +1023,9 @@ var Freezer = function( initialValue, options ) {
 		if( prevNode === frozen ){
 			frozen = updated;
 		}
+		else if( lastCall ) {
+			Utils.warn( false, 'Method ' + lastCall.name + ' called on a detached node.', lastCall.node, lastCall.options );
+		}
 	}
 
 	// Listen to its changes immediately
@@ -1006,7 +1033,7 @@ var Freezer = function( initialValue, options ) {
 		hub = {}
 	;
 
-	Utils.each(['on', 'off', 'once', 'trigger'], function( method ){
+	Utils.each(['on', 'off', 'once', 'emit'], function( method ){
 		var attrs = {};
 		attrs[ method ] = listener[method].bind(listener);
 		Utils.addNE( me, attrs );

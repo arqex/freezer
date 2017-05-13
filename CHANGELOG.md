@@ -1,4 +1,14 @@
 # Freezer Changelog
+###v0.12.0
+* Adds a warning mechanism to detect errors quickly.
+* Adds warning for setting non numeric attributes for arrays.
+* Adds warning for updating detached nodes.
+* Adds method `sort` for array.
+* `trigger` method for events has been renamed to `emit`, added a deprecation warning for `trigger` method.
+* Updates to the docs. Thanks to @YPCrumble @ahmadnassri @dantman.
+* Fixes errors with strict Content Security Policy. Thanks to @greghuc.
+
+
 ###v0.11.2
 * Fixes deep children losing the parent reference on resetting the state.
 
