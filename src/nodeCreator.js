@@ -124,6 +124,12 @@ var nodeCreator = {
 
 			splice: function( index, toRemove, toAdd ){
 				return this.__.store.notify( 'splice', this, arguments, 'array.splice' );
+			},
+
+			sort: function(){
+				var mutable = this.slice();
+				mutable.sort.apply(mutable, arguments);
+				return this.__.store.notify( 'replace', this, mutable, 'array.sort' );
 			}
 		}, commonMethods );
 

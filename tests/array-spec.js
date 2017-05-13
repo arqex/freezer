@@ -165,4 +165,12 @@ describe("Freezer array test", function(){
 		assert.equal( update.foo, undefined );
 	});
 
+	it( "Array sort", function(){
+		var updated = data.set({arr: [ 1, 8, -2, 3, 1] }),
+			arr = updated.arr
+		;
+
+		var updatedArr = arr.sort( function(a, b){ return a < b ? -1 : 1 } );
+		assert.deepEqual( updatedArr, [-2,1,1,3,8] );
+	});
 });
