@@ -1,4 +1,8 @@
 # Freezer Changelog
+
+###v0.12.1
+* Recovers trigger method deleted by default
+
 ###v0.12.0
 * Adds a warning mechanism to detect errors quickly.
 * Adds warning for setting non numeric attributes for arrays.

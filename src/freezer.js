@@ -99,7 +99,7 @@ var Freezer = function( initialValue, options ) {
 		hub = {}
 	;
 
-	Utils.each(['on', 'off', 'once', 'emit'], function( method ){
+	Utils.each(['on', 'off', 'once', 'emit', 'trigger'], function( method ){
 		var attrs = {};
 		attrs[ method ] = listener[method].bind(listener);
 		Utils.addNE( me, attrs );

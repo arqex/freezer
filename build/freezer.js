@@ -1,4 +1,4 @@
-/* freezer-js v0.12.0 (13-5-2017)
+/* freezer-js v0.12.1 (18-5-2017)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -1033,7 +1033,7 @@ var Freezer = function( initialValue, options ) {
 		hub = {}
 	;
 
-	Utils.each(['on', 'off', 'once', 'emit'], function( method ){
+	Utils.each(['on', 'off', 'once', 'emit', 'trigger'], function( method ){
 		var attrs = {};
 		attrs[ method ] = listener[method].bind(listener);
 		Utils.addNE( me, attrs );
