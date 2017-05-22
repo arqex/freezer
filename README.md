@@ -91,7 +91,7 @@ state.d = 3; console.log( state.d ); // logs null
 state.e = 4; console.log( state.e ); // logs undefined
 
 // to update, use methods like set that returns new frozen data
-var updated = state.set( 'e', 4 ); // On next tick it will log 'I was updated'
+var updated = state.set({'e': 4}); // On next tick it will log 'I was updated'
 
 console.log( state.e ); // Still logs undefined
 console.log( updated.e ); // logs 4
