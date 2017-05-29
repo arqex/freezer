@@ -4,11 +4,10 @@ A tree data structure that emits events on updates, even if the modification is 
 
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/freezer)
 [![npm version](https://badge.fury.io/js/freezer-js.svg)](http://badge.fury.io/js/freezer-js)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/arqex/freezer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Are you looking for an immutable.js alternative? Freezer is made with React.js in mind and it uses real immutable structures. It is the perfect store for you application.
 
-Using freezer you don't even need a flux framework, just listen to its `update` events to refresh your UI. [Goodbye boilerplate code!](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
+Are you looking for a Redux alternative? Using Freezer you don't even need a flux framework, just listen to its `update` events to refresh your UI. [Goodbye boilerplate code!](https://medium.com/@arqex/react-the-simple-way-cabdf1f42f12).
 
 What makes Freezer special is:
 

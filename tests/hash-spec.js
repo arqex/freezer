@@ -72,6 +72,10 @@ describe("Freezer hash test", function(){
 		b.set({z:12});
 
 		assert.deepEqual( freezer.get().b.x, [ 'A', 'B', 1] );
+
+		// This shouldn't raise the warning
+		freezer.get().b.x.push('C');
+
 		assert.equal( freezer.get().b.y, 7 );
 		assert.equal( freezer.get().b.z, 10 );
 	});

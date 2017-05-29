@@ -1,5 +1,8 @@
 # Freezer Changelog
 
+###v0.12.2
+* Fixes duplicated detached warnings in non detached nodes.
+
 ###v0.12.1
 * Recovers trigger method deleted by default
 

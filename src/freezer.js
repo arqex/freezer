@@ -49,7 +49,10 @@ var Freezer = function( initialValue, options ) {
 	var lastCall;
 	store.notify = function notify( eventName, node, options, name ){
 		if( name ){
-			lastCall = {name: name, node: node, options: options};
+			if( lastCall && !lastCall.onStore ){
+				detachedWarn( lastCall );
+			}
+			lastCall = {name: name, node: node, options: options, onStore: false};
 		}
 
 		if( eventName === 'now' ){
@@ -88,9 +91,16 @@ var Freezer = function( initialValue, options ) {
 	frozen.__.updateRoot = function( prevNode, updated ){
 		if( prevNode === frozen ){
 			frozen = updated;
+			if( lastCall ){
+				lastCall.onStore = true;
+			}
 		}
 		else if( lastCall ) {
-			Utils.warn( false, 'Method ' + lastCall.name + ' called on a detached node.', lastCall.node, lastCall.options );
+			setTimeout( function(){
+				if( !lastCall.onStore ){
+					detachedWarn( lastCall );
+				}
+			});
 		}
 	}
 
@@ -120,6 +130,10 @@ var Freezer = function( initialValue, options ) {
 
 	Utils.addNE( this, { getData: this.get, setData: this.set } );
 };
+
+function detachedWarn( lastCall ){
+	Utils.warn( false, 'Method ' + lastCall.name + ' called on a detached node.', lastCall.node, lastCall.options );
+}
 
 //#build
 
