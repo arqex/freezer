@@ -1,4 +1,4 @@
-/* freezer-js v0.12.1 (29-5-2017)
+/* freezer-js v0.13.0 (3-7-2017)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -118,10 +118,10 @@ var Utils = {
     ;
 
     function flushQueue () {
+				dirty = false;
         while (fn = queue.shift()) {
             fn();
         }
-        dirty = false;
     }
 
     function nextTick (fn) {

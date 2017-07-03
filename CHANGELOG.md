@@ -1,5 +1,8 @@
 # Freezer Changelog
 
+###v0.13.0
+* Fixes bug making apps unresponsive in FF when an error happens in a listener.
+
 ###v0.12.2
 * Fixes duplicated detached warnings in non detached nodes.
 

@@ -105,10 +105,10 @@ var Utils = {
     ;
 
     function flushQueue () {
+				dirty = false;
         while (fn = queue.shift()) {
             fn();
         }
-        dirty = false;
     }
 
     function nextTick (fn) {
