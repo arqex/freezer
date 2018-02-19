@@ -404,7 +404,7 @@ var Frozen = {
 
 		if( index === -1 ){
 			if(node.__.store.singleParent && parents.length >= 1){
-				throw new Error('Node already has a parent');
+				throw new Error("Freezer: Can't add node to the tree. It's already added and freezer is configured to `singleParent: true`.");
 			}
 			parents[ parents.length ] = parent;
 		}

@@ -1,4 +1,4 @@
-/* freezer-js v0.13.0 (3-7-2017)
+/* freezer-js v0.14.0 (19-2-2018)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -880,6 +880,9 @@ var Frozen = {
 		;
 
 		if( index === -1 ){
+			if(node.__.store.singleParent && parents.length >= 1){
+				throw new Error("Freezer: Can't add node to the tree. It's already added and freezer is configured to `singleParent: true`.");
+			}
 			parents[ parents.length ] = parent;
 		}
 	},
@@ -945,7 +948,8 @@ var Freezer = function( initialValue, options ) {
 		ops = options || {},
 		store = {
 			live: ops.live || false,
-			freezeInstances: ops.freezeInstances || false
+			freezeInstances: ops.freezeInstances || false,
+			singleParent: ops.singleParent || false
 		}
 	;
 

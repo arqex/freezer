@@ -1,5 +1,8 @@
 # Freezer Changelog
 
+###v0.14.0
+* Adds a new flag `singleParent` that prevents the same node to be added twice into the the state tree. Thanks to @nathanial.
+
 ###v0.13.0
 * Fixes bug making apps unresponsive in FF when an error happens in a listener.
 
