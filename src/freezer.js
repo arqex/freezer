@@ -11,7 +11,8 @@ var Freezer = function( initialValue, options ) {
 		ops = options || {},
 		store = {
 			live: ops.live || false,
-			freezeInstances: ops.freezeInstances || false
+			freezeInstances: ops.freezeInstances || false,
+			singleParent: ops.singleParent || false
 		}
 	;
 

@@ -434,4 +434,17 @@ describe("Freezer test", function(){
 		assert.equal( freezer.get().b.z, 0 );
 		assert.equal( freezer.get().b.x[0], 'z' );
 	});
+
+	it('singleParent should limit a node to having one parent', function () {
+		var freezer = new Freezer({
+			a: {
+				b: {}
+			},
+			c: {}
+		}, {singleParent: true, live: true});
+		const oldB = freezer.get().a.b;
+		assert.throws(function() {
+			freezer.get().c.set({b: oldB});
+		}, Error, "Node already has a parent");
+	});
 });

@@ -403,6 +403,9 @@ var Frozen = {
 		;
 
 		if( index === -1 ){
+			if(node.__.store.singleParent && parents.length >= 1){
+				throw new Error('Node already has a parent');
+			}
 			parents[ parents.length ] = parent;
 		}
 	},
