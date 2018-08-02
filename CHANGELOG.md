@@ -1,4 +1,6 @@
 # Freezer Changelog
+###v0.14.1
+* Adds a single name for every message event to work ok with MS Edge.
 
 ###v0.14.0
 * Adds a new flag `singleParent` that prevents the same node to be added twice into the the state tree. Thanks to @nathanial.

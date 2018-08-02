@@ -1,4 +1,4 @@
-/* freezer-js v0.14.0 (19-2-2018)
+/* freezer-js v0.14.0 (2-8-2018)
  * https://github.com/arqex/freezer
  * By arqex
  * License: MIT
@@ -95,7 +95,7 @@ var Utils = {
 		dirty = false,
 		fn,
 		hasPostMessage = !!global.postMessage && (typeof Window !== 'undefined') && (global instanceof Window),
-		messageName = 'nexttick',
+		messageName = 'fzr' + Date.now(),
 		trigger = (function () {
 			return hasPostMessage
 				? function trigger () {
@@ -108,7 +108,7 @@ var Utils = {
 		processQueue = (function () {
 			return hasPostMessage
 				? function processQueue (event) {
-					if (event.source === global && event.data === messageName) {
+					if (event.data === messageName) {
 						event.stopPropagation();
 						flushQueue();
 					}

@@ -526,4 +526,25 @@ describe("Freezer events test", function(){
 
 		assert.equal(freezer.emit('whatever'), 'ok');
 	});
+
+	it( "Two different freezer instances shouldn't listen to other's update events", function(done){
+		var f1 = new Freezer( {name: 'f1', triggered: 0 } ),
+			f2 = new Freezer({ name: 'f2', triggered: 0 } )
+		;
+
+		f1.on('update', function( data ){
+			assert.equal( data.name, 'f1' );
+			assert.equal( data.triggered, 1 );
+		})
+
+		f2.on('update', function( data ){
+			assert.equal( data.name, 'f2' );
+			assert.equal( data.triggered, 1 );
+		})
+
+		f1.get().set({triggered: f1.get().triggered + 1});
+		f2.get().set({triggered: f2.get().triggered + 1});
+
+		setTimeout( done, 50 );
+	})
 });

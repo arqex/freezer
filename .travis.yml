@@ -4,4 +4,5 @@ node_js:
 - '0.10'
 - '0.12'
 - '4'
+- '6.13'
 script: npm run test
