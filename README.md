@@ -1,6 +1,6 @@
 # Freezer
 
-A tree data structure that emits events on updates, even if the modification is emited by one of the leaves, making it easier to think in a reactive way.
+A tree data structure that emits events on updates, even if the modification is emitted by one of the leaves, making it easier to think in a reactive way.
 
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/freezer)
 [![npm version](https://badge.fury.io/js/freezer-js.svg)](http://badge.fury.io/js/freezer-js)
@@ -195,7 +195,7 @@ var freezer = new Freezer({hi: 'hello'}, {mutable: true, live:true});
 | Name         | Type    | Default | Description |
 | ------------ | ------- | ------- | ----------- |
 | **mutable** | boolean | `false` | Once you get used to freezer, you can see that immutability is not necessary if you learn that you shouldn't update the data directly. In that case, disable immutability in the case that you need a small performance boost. |
-| **live** | boolean | `false` | With live mode on, freezer emits the update events just when the changes happen, instead of batching all the changes and emiting the event on the next tick. This is useful if you want freezer to store input field values. |
+| **live** | boolean | `false` | With live mode on, freezer emits the update events just when the changes happen, instead of batching all the changes and emitting the event on the next tick. This is useful if you want freezer to store input field values. |
 | **freezeInstances** | boolean | `false` | It's possible to store class instances in freezer. They are handled like strings or numbers, added to the state like non-frozen leaves. Keep in mind that if their internal state changes, freezer won't `emit` any update event. If you want freezer to handle them as freezer nodes, set 'freezerInstances: true'. They will be frozen and you will be able to update their attributes using freezer methods, but remember that any instance method that update its internal state may fail (the instance is frozen) and wouldn't emit any `update` event. |
 | **singleParent** | boolean | `false` | Freezer allows to add the same node to different parts of the state tree. Updating that node will update all its references that the current state contains. This is a nice feature but it's not ideal if you don't want circular dependencies in your state, in that case set it to `true`. | 
 
@@ -224,14 +224,14 @@ var freezer = new Freezer({a: 'hola', b:[1,2, [3,4,5]], c: false }),
 var updated = state.set({c: true}); // You can also state.set(c, true)
 console.log( updated.c ); // true
 
-// Restore the inital state
+// Restore the initial state
 freezer.set( state );
 console.log( freezer.get().c ); // false
 ```
 
 #### getEventHub()
 
-Every time the data is updated, an `update` event is emited on the freezer object. In order to use those events, *Freezer* implements the [listener API](#listener-api), and `on`, `once`, `off` and `emit` methods are available on them.
+Every time the data is updated, an `update` event is emitted on the freezer object. In order to use those events, *Freezer* implements the [listener API](#listener-api), and `on`, `once`, `off` and `emit` methods are available on them.
 
 If you need to use the events but you don't want to give access to the complete store, you can use the `getEventHub` function:
 ```js
@@ -353,7 +353,7 @@ freezer.get().set({test: 'adios'}).now();
 console.log('changed');
 // logs 'event' first and 'changed' after
 ```
-Use it in cases that you need immediate updates. For example, if you are using React and you want to store an input value outside its component, you'll need to use `now` because the user can type more than one character before the update method is emited, losing data.
+Use it in cases that you need immediate updates. For example, if you are using React and you want to store an input value outside its component, you'll need to use `now` because the user can type more than one character before the update method is emitted, losing data.
 
 Using Freezer's [`live` option](#api) is like using `now` on every update.
 
@@ -388,7 +388,7 @@ freezer.get().arr
 ;
 ```
 
-Array nodes also have the `append` and `prepend` methods to batch insert elements at the begining or the end of the array.
+Array nodes also have the `append` and `prepend` methods to batch insert elements at the beginning or the end of the array.
 ```js
 var freezer = new Freezer({ arr: [2] });
 
@@ -455,7 +455,7 @@ freezer.emit('whatever', data)
 ```
 
 ### Event hooks
-Freezer objects and nodes also emit `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the emited event in the arguments.
+Freezer objects and nodes also emit `beforeAll` and `afterAll` events before and after any other event. Listeners bound to these events also receive the name of the emitted event in the arguments.
 ```js
 var Store = new Freezer({a: 1});
 Store.on('beforeAll', function( eventName, arg1, arg2 ){
@@ -516,7 +516,7 @@ freezer.get().list; // [1000, 1, 2, ..., 999]
 
 Transactions are designed to always commit the changes, so if you start a transaction but you forget to call `run`, it will be called automatically on the next tick.
 
-It is possible to update the child nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is commited, and that may lead to confusion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve the performance much because they have a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior.
+It is possible to update the child nodes of a node that is making a transaction, but it is not really recommended. Those updates will not update the store until the transaction in the parent node is committed, and that may lead to confusion if you use child nodes as common freezer nodes. Updating child nodes doesn't improve the performance much because they have a transacting parent, so it is recommended to make the changes in the transaction node and run it as soon as you have finished with the modifications to prevent undesired behavior.
 
 ## Usage with React
 Creating data-driven React applications using Freezer as your only app state holder is really simple:
