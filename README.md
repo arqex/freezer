@@ -304,7 +304,7 @@ var data = {obj: {a:'hola', b:'adios'}, arr: [1,2]},
     freezer = new Freezer( data )
 ;
 
-assert.deepEqual( data, freezer.get().toJS ); // Ok
+assert.deepEqual( data, freezer.get().toJS() ); // Ok
 ```
 
 #### pivot()
